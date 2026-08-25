@@ -1,0 +1,17 @@
+---
+/**
+ * MDX link: root-relative hrefs ("/work/…") get the deploy base prefixed,
+ * so article content stays portable across base paths and custom domains.
+ */
+import { withBase } from "~/lib/site";
+
+interface Props {
+  href?: string;
+  [key: string]: unknown;
+}
+
+const { href = "", ...rest } = Astro.props;
+const resolved = href.startsWith("/") ? withBase(href) : href;
+---
+
+<a href={resolved} {...rest}><slot /></a>

@@ -1,0 +1,92 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { publishedPosts, readingTime, formatDate } from "~/lib/blog";
+import { withBase } from "~/lib/site";
+
+const posts = await publishedPosts();
+const [featured, ...rest] = posts;
+---
+
+<BaseLayout
+  title="Blog"
+  description="Writing by Mateo Osorio Delhonte on engineering, grounded AI, developer tools, and building systems that can prove what they claim."
+>
+  <section class="container-page pt-20 pb-24 md:pt-28 md:pb-32">
+    <p class="eyebrow">Blog</p>
+    <h1 class="mt-6 max-w-3xl font-display text-display-xl text-ink">
+      Notes from the <em class="italic text-accent">evidence</em> side of software.
+    </h1>
+    <p class="mt-6 max-w-xl text-lede text-ink-muted">
+      Engineering, grounded AI, and developer tools — mostly lessons pulled out of the projects on
+      this site.
+    </p>
+
+    {
+      featured && (
+        <a href={withBase(`/blog/${featured.id}/`)} class="group mt-16 block md:mt-20">
+          <article class="hairline-t grid gap-x-12 gap-y-4 pt-8 lg:grid-cols-12">
+            <div class="lg:col-span-3">
+              <p class="font-mono text-[0.7rem] tracking-[0.12em] text-accent uppercase">Latest</p>
+              <p class="mt-2 font-mono text-[0.7rem] tracking-[0.08em] text-ink-faint uppercase">
+                {formatDate(featured.data.pubDate)}
+                <span class="mx-1.5" aria-hidden="true">
+                  ·
+                </span>
+                {readingTime(featured.body)} min
+              </p>
+            </div>
+            <div class="lg:col-span-9">
+              <h2 class="max-w-2xl font-display text-display text-ink transition-colors group-hover:text-accent">
+                {featured.data.title}
+                {featured.data.draft && <span class="chip ml-3 align-middle">Draft</span>}
+              </h2>
+              <p class="mt-4 max-w-xl leading-relaxed text-ink-muted">
+                {featured.data.description}
+              </p>
+              <p class="mt-5 font-mono text-[0.68rem] tracking-[0.1em] text-ink-faint uppercase">
+                {featured.data.category}
+              </p>
+            </div>
+          </article>
+        </a>
+      )
+    }
+
+    <div class="mt-4">
+      {
+        rest.map((post, i) => (
+          <a href={withBase(`/blog/${post.id}/`)} class="group block">
+            <article
+              class="hairline-t grid gap-x-12 gap-y-2 py-7 lg:grid-cols-12"
+              style={`--reveal-i:${i % 3}`}
+            >
+              <p class="font-mono text-[0.7rem] tracking-[0.08em] text-ink-faint uppercase lg:col-span-3 lg:pt-1.5">
+                {formatDate(post.data.pubDate)}
+                <span class="mx-1.5" aria-hidden="true">
+                  ·
+                </span>
+                {readingTime(post.body)} min
+              </p>
+              <div class="lg:col-span-9">
+                <h2 class="max-w-2xl font-display text-title text-ink transition-colors group-hover:text-accent">
+                  {post.data.title}
+                  {post.data.draft && <span class="chip ml-3 align-middle">Draft</span>}
+                </h2>
+                <p class="mt-2 max-w-xl text-sm leading-relaxed text-ink-muted">
+                  {post.data.description}
+                </p>
+                <p class="mt-3 font-mono text-[0.68rem] tracking-[0.1em] text-ink-faint uppercase">
+                  {post.data.category}
+                </p>
+              </div>
+            </article>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="hairline-t mt-0 pt-6 text-sm text-ink-muted">
+      Also available as an <a href={withBase("/rss.xml")} class="link-under text-ink">RSS feed</a>.
+    </p>
+  </section>
+</BaseLayout>

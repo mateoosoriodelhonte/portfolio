@@ -1,0 +1,34 @@
+---
+title: "Developer tools should explain before they automate"
+description: "The tools I trust narrate what they observe and leave the verb to me. Three shipped projects later, 'read-only by design' has become my default posture for a v1."
+pubDate: 2026-08-11
+category: "Developer Tools"
+---
+
+There's a moment in every tool's design where you decide what the big button does. The tempting answer is automation: _kill the process, merge the PR, fix the highlight._ The answer I keep shipping instead is explanation — and it started as a safety decision before I understood it was a product decision.
+
+Three of my projects are explicitly read-only, each in a place where automation was the obvious feature:
+
+- [ProcessPilot](/work/processpilot/) monitors what's using your Mac. It has **no kill button** — no process-control endpoint, no exec, not even a restart. It observes, groups, explains, and detects anomalies. The verbs stay with you.
+- [Gatehouse](/work/gatehouse/) evaluates whether a pull request is ready. It **never merges** — it renders a verdict and the evidence behind it, and GitHub's branch protection remains the authority.
+- [TraceMark](/work/tracemark/) re-finds saved quotes on their source pages. If the exact passage is ambiguous or gone, it **refuses to guess** rather than highlighting something that merely looks right.
+
+## Automation borrows trust it hasn't earned
+
+A tool that acts is making a claim: _my model of the situation is good enough to change it._ For a v1, that claim is almost always premature. ProcessPilot can see that a process is using 40% CPU; it cannot see that the process is your unsaved render job. The gap between _observed_ and _understood_ is exactly where automated actions go wrong — and where they destroy trust in ways an explanation never does.
+
+An explanation, by contrast, is falsifiable on the spot. If ProcessPilot says "this group of processes is a browser and its helpers" and it's wrong, you've lost nothing and learned the tool's limits. Wrong explanation: shrug. Wrong kill: incident.
+
+## Explanation forces better architecture
+
+Committing to explain-first changed the internals of all three tools more than any feature would have.
+
+You cannot explain what you haven't separated. ProcessPilot keeps _observed evidence_, _deterministic classification_, _conservative risk assessment_, and _optional generated prose_ as distinct fields with distinct rules — because the UI has to show which is which. Gatehouse's verdict must decompose into the exact policy checks that produced it, which forces the rules engine to be a pure, inspectable core rather than a tangle of conditionals. The moment "why?" is a first-class requirement, honest data modeling stops being optional.
+
+Read-only also collapses the security story. A monitor with no control endpoint doesn't need to defend one. A dashboard that can't merge can't be tricked into merging. The most reliable way to prevent a dangerous action is for the code path not to exist — a guarantee you can verify by reading the API surface, and one I list in each project's docs precisely because it's checkable.
+
+## When automation does earn its place
+
+This isn't an argument against automation forever. It's a sequencing claim: automation is a privilege a tool earns _after_ its explanations have been right, visibly, for a while — and after users can predict what it will do. Even then, the explanation layer is what makes the automation reviewable: the tool that could always show its reasoning is the one whose actions you can audit.
+
+But the v1 question isn't "what should this tool do for me?" It's "what does this tool know, and how would I check?" Ship that first. The verbs can wait.

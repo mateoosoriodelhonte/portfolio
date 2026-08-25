@@ -1,0 +1,34 @@
+---
+title: "One idea, two stacks: what transferred and what didn't"
+description: "RepoSignal and Gatehouse both turn GitHub state into deterministic judgments — one in TypeScript and Next.js, one in C# and .NET. Building both taught me which engineering actually belongs to the stack."
+pubDate: 2026-08-24
+category: "Lessons Learned"
+---
+
+Two of my projects are, at a squint, the same product. [RepoSignal](/work/reposignal/) reads public GitHub data and scores how a repository is engineered. [Gatehouse](/work/gatehouse/) reads GitHub data and reduces a pull request to a readiness verdict. Both are deterministic judgment engines over the same upstream API — one built with TypeScript, Next.js and PostgreSQL, the other with C#, .NET and Blazor.
+
+Building the same _kind_ of system twice, in ecosystems that share almost no code, was the clearest lesson I've had in which parts of engineering belong to the stack and which parts are the actual work.
+
+## What transferred without translation
+
+**The domain model.** Both systems needed the same central insight: normalize the upstream API into your own types at the boundary, and let nothing downstream see a GitHub field name. In RepoSignal that's a normalization layer producing a `RepositorySnapshot`; in Gatehouse, GitHub evidence is mapped into a local model the rules engine consumes. Same idea, different syntax. The boundary is what makes the scoring and readiness engines testable with plain fixtures instead of recorded HTTP traffic.
+
+**The honesty rules.** Missing evidence stays distinguishable from bad evidence in both: `score: number | null` in one, an `UNKNOWN` verdict in the other. I wrote about this in [Missing data is not failure](/blog/missing-data-is-not-failure/) — the point here is that the discipline moved between languages untouched. Nullability is a design stance before it is a type feature.
+
+**The trust posture.** Both tools are read-only toward GitHub, and both make that a product promise, not an implementation detail. Neither merges, comments, writes, or mutates. Deciding what a tool _refuses_ to do turned out to be perfectly portable.
+
+**The testing shape.** Pure rules engine at the center, exercised by unit tests; the API boundary mocked; end-to-end checks driving a real build in a real browser. Vitest and Playwright on one side, xUnit and a Playwright browser flow on the other. The pyramid didn't care about the language.
+
+## What the stack actually changed
+
+**Distribution is a stack decision.** RepoSignal deploys as a web app — its natural form is a URL you visit. Gatehouse ships as a `dotnet tool` installed from a NuGet package, serving a local dashboard on `localhost`. The .NET ecosystem made "install a trustworthy local CLI with a web UI" the path of least resistance; the JavaScript ecosystem made "deploy to the edge and share a link" the default. Same category of product, different gravitational pulls.
+
+**Type systems push on different walls.** TypeScript's structural typing plus `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` is superb at modeling _data honestly_ — unions like `number | null` flow through the system and the compiler hunts every path. C#'s nominal types and nullable reference types push toward modeling _behavior_: interfaces, sealed rule types, exhaustive switches over verdict enums. Neither is better; I reached for different tools to express the same invariants.
+
+**The web layer diverged completely.** Next.js streaming, CSP nonces, and server components shaped RepoSignal's rendering decisions end to end. Blazor's server-rendered components made Gatehouse's dashboard almost boring — in the best way — but ties it to a local .NET runtime. The 20% of each codebase closest to the user was effectively non-transferable.
+
+## The uncomfortable takeaway
+
+The parts that transferred are the parts interviews rarely probe, and the parts that didn't transfer are the ones résumés list. "Knows Next.js" and "knows ASP.NET Core" described the _replaceable_ halves of these projects. The durable half — boundary design, honest nullability, a testable core, a clear refusal list — has no framework name attached.
+
+That's also the argument for building in more than one stack at all: it's the fastest way to find out which of your skills were actually the framework's.
