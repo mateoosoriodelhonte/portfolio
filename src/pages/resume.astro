@@ -1,0 +1,185 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { links, site, withBase } from "~/lib/site";
+import { projects } from "~/lib/projects";
+
+const featured = projects.filter((p) =>
+  ["reposignal", "studyforge", "processpilot"].includes(p.slug),
+);
+const compact = projects.filter((p) => !featured.includes(p));
+
+const skills: [string, string][] = [
+  ["Languages", "TypeScript · JavaScript · Python · Go · Rust · C# · Swift · SQL · C · C++"],
+  ["Frontend", "React · Next.js · Svelte · Astro · HTMX · SwiftUI · Tailwind CSS"],
+  [
+    "Backend & data",
+    "Node.js · FastAPI · ASP.NET Core · REST · GraphQL · PostgreSQL · SQLite · Prisma",
+  ],
+  ["Testing & delivery", "Playwright · Vitest · pytest · xUnit · GitHub Actions · CI/CD"],
+  ["AI", "RAG · semantic retrieval · context engineering · AI agents · LLM evaluation · Ollama"],
+];
+---
+
+<BaseLayout
+  title="Resume"
+  description="Resume of Mateo Osorio Delhonte — software engineer: platform engineering at SolutionStream, shipped products across six stacks, open-source contribution, and an evidence-first engineering practice."
+>
+  <section class="container-page pt-16 pb-24 md:pt-24">
+    <div class="mx-auto max-w-[46rem]">
+      <div class="flex flex-wrap items-end justify-between gap-4 print:hidden">
+        <p class="eyebrow">Resume</p>
+        <button type="button" onclick="window.print()" class="btn btn-ghost px-4! py-2.5! text-sm">
+          Print / save as PDF
+        </button>
+      </div>
+
+      <!-- header -->
+      <header class="mt-8 print:mt-0">
+        <h1 class="font-display text-display text-ink">{site.name}</h1>
+        <p class="mt-2 text-ink-muted">{site.tagline}</p>
+        <p
+          class="mt-4 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[0.72rem] tracking-[0.04em] text-ink-faint"
+        >
+          <span>Utah, United States</span>
+          <a href={links.github} class="hover:text-ink">github.com/mateoosoriodelhonte</a>
+          <a href={links.linkedin} class="hover:text-ink"
+            >linkedin.com/in/mateo-osorio-delhonte-5a93452ab</a
+          >
+        </p>
+      </header>
+
+      <!-- experience -->
+      <section class="mt-12">
+        <h2 class="eyebrow hairline-b pb-3">Experience</h2>
+        <div class="mt-6">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="font-medium text-ink">Platform Engineer — SolutionStream</h3>
+            <p class="font-mono text-[0.7rem] tracking-[0.08em] text-ink-faint uppercase">
+              Current
+            </p>
+          </div>
+          <p class="mt-1 text-sm text-ink-muted">New Reward platform · client-facing product</p>
+          <ul class="mt-3 space-y-1.5 text-sm leading-relaxed text-ink-muted">
+            <li>
+              — Build client-facing features end to end: React/Next.js frontends, API endpoints, and
+              PostgreSQL-backed data systems.
+            </li>
+            <li>
+              — Own route behavior and data coverage: honest empty, error, and unavailable states
+              across the product.
+            </li>
+            <li>
+              — Regression testing with Playwright plus CI and release validation; production
+              investigation and codebase audits with written findings.
+            </li>
+            <li>
+              — AI-assisted engineering with human, evidence-backed verification before anything
+              counts as done.
+            </li>
+          </ul>
+        </div>
+        <div class="mt-6">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="font-medium text-ink">Research Assistant — Southern Utah University</h3>
+            <p class="font-mono text-[0.7rem] tracking-[0.08em] text-ink-faint uppercase">
+              Current
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- projects -->
+      <section class="mt-12">
+        <h2 class="eyebrow hairline-b pb-3">Selected projects — all public</h2>
+        <div class="mt-6 space-y-5">
+          {
+            featured.map((p) => (
+              <div>
+                <div class="flex flex-wrap items-baseline gap-x-3">
+                  <h3 class="font-medium text-ink">{p.name}</h3>
+                  <p class="font-mono text-[0.68rem] text-ink-faint">
+                    {p.stack.slice(0, 5).join(" · ")}
+                  </p>
+                </div>
+                <p class="mt-1 text-sm leading-relaxed text-ink-muted">{p.summary}</p>
+                <p class="mt-1 font-mono text-[0.68rem] text-ink-faint">
+                  {(p.repo ?? p.store ?? "").replace("https://", "")}
+                </p>
+              </div>
+            ))
+          }
+          {
+            compact.map((p) => (
+              <div>
+                <div class="flex flex-wrap items-baseline gap-x-3">
+                  <h3 class="font-medium text-ink">{p.name}</h3>
+                  <p class="font-mono text-[0.68rem] text-ink-faint">
+                    {p.stack.slice(0, 4).join(" · ")}
+                  </p>
+                </div>
+                <p class="mt-1 text-sm leading-relaxed text-ink-muted">{p.tagline}</p>
+                <p class="mt-1 font-mono text-[0.68rem] text-ink-faint">
+                  {(p.repo ?? p.store ?? "").replace("https://", "")}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- open source -->
+      <section class="mt-12">
+        <h2 class="eyebrow hairline-b pb-3">Open source</h2>
+        <p class="mt-5 text-sm leading-relaxed text-ink-muted">
+          External contribution to <span class="text-ink">sandpiper-toolchain/sandplover</span>
+          (scientific Python): correctness fix with regression test —
+          <span class="font-mono text-[0.72rem]"
+            >github.com/sandpiper-toolchain/sandplover/pull/261</span
+          >. All six personal projects above are MIT-licensed with contribution guides and CI.
+        </p>
+      </section>
+
+      <!-- skills -->
+      <section class="mt-12">
+        <h2 class="eyebrow hairline-b pb-3">Skills</h2>
+        <div class="mt-5 space-y-2.5">
+          {
+            skills.map(([group, list]) => (
+              <p class="text-sm leading-relaxed">
+                <span class="font-medium text-ink">{group}: </span>
+                <span class="text-ink-muted">{list}</span>
+              </p>
+            ))
+          }
+        </div>
+      </section>
+
+      <p class="mt-12 text-sm text-ink-muted print:hidden">
+        This page is generated from the same verified data as the rest of the site — full history
+        and references on request via <a href={links.linkedin} class="link-under text-ink"
+          >LinkedIn</a
+        >. The <a href={withBase("/experience/")} class="link-under text-ink">experience page</a> has
+        the longer story.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @media print {
+    :global(#site-header),
+    :global(footer),
+    :global(.grain::after) {
+      display: none !important;
+    }
+
+    :global(main) {
+      padding-top: 0 !important;
+    }
+
+    section {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0 !important;
+    }
+  }
+</style>
