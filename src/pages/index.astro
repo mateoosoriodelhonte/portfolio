@@ -5,7 +5,9 @@ import SectionHeader from "~/components/SectionHeader.astro";
 import ArrowLink from "~/components/ArrowLink.astro";
 import { links, withBase } from "~/lib/site";
 import { project } from "~/lib/projects";
+import { sandploverPrState } from "~/lib/github";
 
+const pr = await sandploverPrState();
 const reposignal = project("reposignal");
 const studyforge = project("studyforge");
 const processpilot = project("processpilot");
@@ -336,10 +338,52 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
     </div>
   </section>
 
+  <!-- ------------------------------------------------------ open source -->
+  <section class="hairline-t">
+    <div class="container-page py-20 md:py-24">
+      <div class="grid items-center gap-x-10 gap-y-6 lg:grid-cols-12">
+        <div class="lg:col-span-4">
+          <SectionHeader number="05" label="Open source" />
+        </div>
+        <div class="lg:col-span-8">
+          <a
+            href={links.sandploverPr}
+            class="group reveal flex flex-wrap items-baseline gap-x-4 gap-y-2"
+          >
+            {
+              pr.state === "merged" ? (
+                <span class="chip chip--go">
+                  <span class="chip-dot" aria-hidden="true" />
+                  PR #261 · merged
+                </span>
+              ) : (
+                <span class="chip chip--open">
+                  <span class="chip-dot" aria-hidden="true" />
+                  PR #261 · {pr.state}
+                </span>
+              )
+            }
+            <span class="text-ink transition-colors group-hover:text-accent">
+              sandpiper-toolchain/sandplover — NaN validation fix{
+                pr.state === "open" && ", awaiting maintainer review"
+              }
+            </span>
+          </a>
+          <p class="reveal mt-4 max-w-xl text-sm text-ink-muted" style="--reveal-i:1">
+            Working in codebases I don’t own, on their terms.
+            <a href={withBase("/experience/#open-source")} class="link-under text-ink"
+              >More on this</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ---------------------------------------------------------- closing -->
   <section class="hairline-t">
     <div class="container-page flex flex-col items-start py-28 md:py-40">
-      <p class="reveal eyebrow">05 — Contact</p>
+      <p class="reveal eyebrow">06 — Contact</p>
       <h2
         class="reveal mt-8 max-w-[16ch] font-display text-display-xl text-ink"
         style="--reveal-i:1"

@@ -1,0 +1,223 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import ArrowLink from "~/components/ArrowLink.astro";
+import { withBase } from "~/lib/site";
+
+const flow = [
+  {
+    name: "Question",
+    detail: "a task worth automating, stated precisely",
+    text: "Everything downstream inherits the quality of the question. Vague intent in, plausible nonsense out.",
+  },
+  {
+    name: "Retrieve context",
+    detail: "code · docs · data · evidence",
+    text: "Before any model runs, the system gathers what is actually known: the relevant source, the schema, the ticket, the measurement. Retrieval is an engineering problem — indexing, freshness, access control — not a prompt.",
+  },
+  {
+    name: "Rank and select",
+    detail: "hybrid retrieval · reranking · budgets",
+    text: "Context windows are budgets. Lexical and semantic retrieval find candidates; reranking decides what deserves the model’s attention, and everything else stays out.",
+  },
+  {
+    name: "Model reasons",
+    detail: "over what was found, not what it imagines",
+    text: "The model works from the selected evidence. Its job is synthesis and judgment — not recalling facts the system could have looked up.",
+  },
+  {
+    name: "Evidence-backed output",
+    detail: "claims that carry their sources",
+    text: "Useful output points back at what it used. An answer that can cite the retrieved passage, the failing test, or the API response can be checked; one that can’t is a guess with good grammar.",
+  },
+  {
+    name: "Validation",
+    detail: "tests · types · review · determinism",
+    text: "Nothing ships on the model’s word. Deterministic checks — compilers, test suites, schema validation, human review — decide what is accepted.",
+  },
+];
+
+const practice = [
+  [
+    "Retrieval-augmented generation",
+    "Grounding generation in retrieved evidence — and measuring whether retrieval, not the model, is the bottleneck. It usually is.",
+  ],
+  [
+    "Hybrid and semantic retrieval",
+    "Combining lexical search with embeddings and reranking; knowing when FTS5 at small scale beats a vector database at any scale.",
+  ],
+  [
+    "Context engineering",
+    "Deciding what enters the window: structure, ordering, compression, and the discipline to leave things out.",
+  ],
+  [
+    "AI agents and orchestration",
+    "Tool-using agents with narrow jobs, deterministic scaffolding, and multi-agent workflows where the split genuinely helps.",
+  ],
+  [
+    "LLM evaluation",
+    "Golden sets, failure-mode fixtures, and mocked transports — every AI path in my projects is tested against a transport that never contacts a live model in CI.",
+  ],
+  [
+    "Evidence-backed automation",
+    "Automation that shows what it observed before what it concluded, and says “unknown” when it cannot know.",
+  ],
+];
+---
+
+<BaseLayout
+  title="Grounded AI"
+  description="How Mateo Osorio Delhonte approaches AI systems: retrieval before reasoning, deterministic cores with AI at the edges, local-first model fencing, and evidence-backed output that can be validated."
+>
+  <section class="container-page pt-20 pb-24 md:pt-28">
+    <p class="eyebrow">Grounded AI</p>
+    <h1 class="mt-6 max-w-3xl font-display text-display-xl text-ink">
+      Make the model <em class="italic text-accent">show its sources</em>.
+    </h1>
+    <p class="mt-6 max-w-xl text-lede text-ink-muted">
+      AI is most useful when it can retrieve trustworthy evidence before it reasons — and when the
+      system around it decides what the model may touch, what it must cite, and what gets validated
+      before anything ships.
+    </p>
+  </section>
+
+  <!-- the flow, expanded -->
+  <section class="hairline-t bg-surface">
+    <div class="container-page py-20 md:py-28">
+      <p class="reveal eyebrow">
+        <span class="text-accent">01</span> — The shape of a grounded system
+      </p>
+      <ol class="mt-14 grid gap-x-12 gap-y-0 lg:grid-cols-2">
+        {
+          flow.map((stage, i) => (
+            <li
+              class:list={["reveal flow-item relative pb-12 pl-10", i % 2 === 1 && "lg:top-16"]}
+              style={`--reveal-i:${i % 2}`}
+            >
+              <span class="flow-node" aria-hidden="true">
+                <span class="font-mono text-[0.68rem] text-current">{i + 1}</span>
+              </span>
+              <h2 class="font-display text-title text-ink">{stage.name}</h2>
+              <p class="mt-1 font-mono text-[0.7rem] tracking-[0.1em] text-ink-faint uppercase">
+                {stage.detail}
+              </p>
+              <p class="mt-3 max-w-md text-sm leading-relaxed text-ink-muted">{stage.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- practice areas -->
+  <section class="container-page py-24 md:py-32">
+    <p class="reveal eyebrow"><span class="text-accent">02</span> — What I work with</p>
+    <div class="mt-12 grid gap-x-10 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
+      {
+        practice.map(([name, text], i) => (
+          <div class="reveal hairline-t py-7" style={`--reveal-i:${i % 3}`}>
+            <h2 class="text-[0.95rem] font-medium text-ink">{name}</h2>
+            <p class="mt-2.5 text-sm leading-relaxed text-ink-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- receipts -->
+  <section class="hairline-t">
+    <div class="container-page py-24 md:py-32">
+      <p class="reveal eyebrow">
+        <span class="text-accent">03</span> — Where this shows up in my work
+      </p>
+      <div class="mt-12 space-y-0">
+        <div class="reveal hairline-t grid gap-x-10 gap-y-3 py-8 lg:grid-cols-[16rem_1fr]">
+          <h2 class="font-display text-title text-ink">Retrieval over your own material</h2>
+          <p class="max-w-2xl text-ink-muted">
+            <a href={withBase("/work/studyforge/")} class="evidence-link">StudyForge</a>’s “Ask my
+            notes” retrieves the relevant passages from your own documents — and works with no AI
+            configured at all, because retrieval is useful before generation is. At one person’s
+            scale that means FTS5, not a vector database.
+          </p>
+        </div>
+        <div class="reveal hairline-t grid gap-x-10 gap-y-3 py-8 lg:grid-cols-[16rem_1fr]">
+          <h2 class="font-display text-title text-ink">Deterministic core, AI at the edges</h2>
+          <p class="max-w-2xl text-ink-muted">
+            <a href={withBase("/work/reposignal/")} class="evidence-link">RepoSignal</a> and
+            <a href={withBase("/work/gatehouse/")} class="evidence-link">Gatehouse</a> compute every score
+            and verdict with pure, tested functions. A model may one day rephrase findings; it will never
+            produce or adjust a number. StudyForge’s scheduler is arithmetic a model cannot reach.
+          </p>
+        </div>
+        <div
+          class="reveal hairline-t hairline-b grid gap-x-10 gap-y-3 py-8 lg:grid-cols-[16rem_1fr]"
+        >
+          <h2 class="font-display text-title text-ink">Local models, fenced in</h2>
+          <p class="max-w-2xl text-ink-muted">
+            <a href={withBase("/work/processpilot/")} class="evidence-link">ProcessPilot</a> and
+            <a href={withBase("/work/tracemark/")} class="evidence-link">TraceMark</a> integrate Ollama
+            behind loopback-only, allowlisted transports with explicit user consent — and fail back to
+            deterministic behavior when the model is missing. Every AI failure mode is tested against
+            a mock transport.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- honesty block -->
+  <section class="container-page pb-28 md:pb-36">
+    <div class="reveal max-w-3xl rounded-xl border border-line bg-surface p-8 md:p-10">
+      <p class="eyebrow">What I don’t claim</p>
+      <p class="mt-4 leading-relaxed text-ink-muted">
+        I’m not a research scientist and I haven’t trained foundation models. My work is the
+        <strong class="text-ink">systems engineering around models</strong> — retrieval, grounding, orchestration,
+        evaluation, and the deterministic boundaries that make AI features trustworthy enough to ship.
+        On this page, as everywhere else on this site, the claims are limited to what the linked projects
+        demonstrate.
+      </p>
+    </div>
+    <div class="reveal mt-10">
+      <ArrowLink href={withBase("/work/")}>See the projects</ArrowLink>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* connectors read as a single sequence only in the one-column layout */
+  @media (max-width: 1023px) {
+    .flow-item::before {
+      content: "";
+      position: absolute;
+      left: 0.8rem;
+      top: 2rem;
+      bottom: 0.4rem;
+      width: 1px;
+      background: var(--line-strong);
+    }
+
+    .flow-item:last-child::before {
+      background: linear-gradient(to bottom, var(--line-strong), transparent);
+    }
+  }
+
+  .flow-node {
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--ink-muted);
+  }
+
+  .flow-item:nth-child(5) .flow-node {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+</style>
