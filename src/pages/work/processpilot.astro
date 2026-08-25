@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
 import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
@@ -34,8 +35,26 @@ const endpoints = [
   slug="processpilot"
   description="Case study: ProcessPilot, a privacy-first read-only macOS process monitor. A Rust telemetry collector feeds a Go analysis service over a one-way JSONL pipe — no admin access, no kill switch, optional local AI."
 >
-  <!-- trust boundary lead -->
+  <!-- lead screenshot -->
   <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.overview!}
+          alt="ProcessPilot's overview page asking 'Why is my Mac slow?' — memory, CPU, swap and a deterministic ELEVATED pressure verdict over a table of top applications with stopping-risk labels, under a banner reading 'Demo data: these numbers are deterministic examples, not telemetry from this Mac'"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        Demo mode — deterministic example data, and the banner says so
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- trust boundary -->
+  <div class="container-page pt-14">
     <div class="reveal grid overflow-hidden rounded-xl border border-line md:grid-cols-2">
       <div class="bg-surface p-8 md:p-10">
         <p class="eyebrow text-accent">Observes</p>
@@ -191,6 +210,19 @@ const endpoints = [
         </p>
       </div>
     </div>
+    <figure class="reveal mt-10">
+      <div class="media-frame shadow-soft">
+        <Image
+          src={p.images.applications!}
+          alt="ProcessPilot's Applications page grouping helper processes under identified applications, each with purpose, CPU, memory, and a conservative stopping-risk label"
+          widths={[640, 1080, 1600]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+        />
+      </div>
+      <figcaption class="case-caption">
+        Grouped evidence — helpers roll up under the application, with conservative stopping risk
+      </figcaption>
+    </figure>
   </CaseSection>
 
   <CaseSection number="04" label="Engineering decisions" width="wide">

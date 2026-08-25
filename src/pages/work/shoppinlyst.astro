@@ -8,18 +8,18 @@ const p = project("shoppinlyst");
 
 const phones = [
   {
-    image: p.images.lists!,
-    alt: "ShoppinLyst home screen with Groceries, Cleaning Products and Wishlist lists, each showing item counts and progress",
+    image: p.images.listsDark!,
+    alt: "ShoppinLyst in dark mode: eight lists including Groceries, Pantry, Wishlist and custom ones, each with item counts and progress bars",
     caption: "Lists with progress",
   },
   {
-    image: p.images.nearby!,
-    alt: "ShoppinLyst Nearby Stores map of lower Manhattan with grocery store pins and distance cards including Happier Grocery, 0.6 miles away",
-    caption: "Nearby stores on a map",
+    image: p.images.recipesDark!,
+    alt: "ShoppinLyst's Recipes tab filtering breakfast recipes — pancakes, french toast, omelette — each with an ingredient count ready to add to a list",
+    caption: "Recipes become shopping items",
   },
   {
-    image: p.images.prices!,
-    alt: "ShoppinLyst Store Prices screen listing nearby Utah stores with website and search links",
+    image: p.images.pricesDark!,
+    alt: "ShoppinLyst's Store Prices screen listing nearby Utah stores — Bella's Market in Vineyard, Costco Wholesale in Lehi — with website and search links",
     caption: "Store links in one place",
   },
 ];
@@ -31,7 +31,7 @@ const spec = [
   ["Current version", "2.1"],
   ["Download size", "0.8 MB"],
   ["First released", "August 2025"],
-  ["Distribution", "App Store"],
+  ["Rating", "5.0 — from 6 ratings"],
 ];
 ---
 
@@ -74,12 +74,41 @@ const spec = [
     <p>
       Unlike the engineering tools elsewhere on this site, this one is a <strong
         >shipped consumer product</strong
-      > — designed, built, reviewed by Apple, and maintained through real releases since 2025. Version
-      2.1 shipped in August 2026.
+      > — designed, built, reviewed by Apple, and maintained through real releases since 2025. The 2.x
+      series added the Recipes tab; version 2.1 shipped in August 2026.
     </p>
   </CaseSection>
 
-  <CaseSection number="02" label="Spec sheet" width="wide">
+  <CaseSection number="02" label="Around the app" width="wide">
+    <div class="mx-auto grid max-w-2xl grid-cols-2 items-start gap-6 sm:gap-10">
+      <figure class="reveal">
+        <div class="phone shadow-soft">
+          <Image
+            src={p.images.nearby!}
+            alt="ShoppinLyst's Nearby Stores map of lower Manhattan, dense with grocery-store pins and distance cards with directions"
+            widths={[320, 480, 720]}
+            sizes="(min-width: 640px) 300px, 44vw"
+          />
+        </div>
+        <figcaption class="case-caption text-center">Nearby stores, with directions</figcaption>
+      </figure>
+      <figure class="reveal sm:translate-y-8" style="--reveal-i:1">
+        <div class="phone shadow-soft">
+          <Image
+            src={p.images.addItem!}
+            alt="ShoppinLyst Add Item form with name, quantity and unit fields, a priority selector and a notes field"
+            widths={[320, 480, 720]}
+            sizes="(min-width: 640px) 300px, 44vw"
+          />
+        </div>
+        <figcaption class="case-caption text-center">
+          Items carry quantity, unit, priority, notes
+        </figcaption>
+      </figure>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="03" label="Spec sheet" width="wide">
     <div class="grid items-start gap-x-14 gap-y-10 lg:grid-cols-2">
       <div class="max-w-md">
         {
@@ -97,23 +126,23 @@ const spec = [
           SwiftUI, system frameworks, no bundled analytics, nothing the product doesn’t need.
         </p>
       </div>
-      <figure class="reveal mx-auto w-full max-w-[280px]">
+      <figure class="reveal mx-auto w-full max-w-[300px]">
         <div class="phone shadow-soft">
           <Image
-            src={p.images.addItem!}
-            alt="ShoppinLyst Add Item form with name, quantity and unit fields, a priority selector and a notes field"
+            src={p.images.appStore!}
+            alt="ShoppinLyst's App Store listing: the cart-and-checkmark icon, 'Smarter shopping, less waste', a 5.0 rating from 6 ratings, and the version 2.1 release notes"
             widths={[320, 480, 720]}
-            sizes="280px"
+            sizes="300px"
           />
         </div>
         <figcaption class="case-caption text-center">
-          Items carry quantity, unit, priority, and notes
+          The listing, as shipped — the rating carries its sample size
         </figcaption>
       </figure>
     </div>
   </CaseSection>
 
-  <CaseSection number="03" label="Why it matters here">
+  <CaseSection number="04" label="Why it matters here">
     <p>
       Developer tools forgive a rough edge; consumer software doesn’t. Shipping ShoppinLyst meant
       the other half of engineering: App Store review, release management across versions, MapKit
