@@ -1,0 +1,21 @@
+---
+interface Props {
+  number: string;
+  label: string;
+  title?: string | undefined;
+  class?: string | undefined;
+}
+
+const { number, label, title, class: className } = Astro.props;
+---
+
+<div class:list={["reveal", className]}>
+  <div class="hairline-t flex items-baseline justify-between pt-4">
+    <p class="eyebrow">
+      <span class="text-accent">{number}</span>
+      <span class="mx-1.5" aria-hidden="true">—</span>{label}
+    </p>
+    <slot name="aside" />
+  </div>
+  {title && <h2 class="mt-8 max-w-2xl font-display text-display text-ink">{title}</h2>}
+</div>

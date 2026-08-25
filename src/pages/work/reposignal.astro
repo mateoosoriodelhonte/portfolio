@@ -1,0 +1,32 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { project } from "~/lib/projects";
+
+const p = project("reposignal");
+---
+
+<BaseLayout title={p.name} description={p.tagline}>
+  <section class="container-page pt-20 pb-28 md:pt-28">
+    <p class="eyebrow">{p.domains.join(" · ")}</p>
+    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
+    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
+    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
+    <p class="mt-10 text-sm text-ink-muted">
+      Full case study in progress.
+      {
+        p.repo && (
+          <a href={p.repo} class="evidence-link">
+            Repository
+          </a>
+        )
+      }
+      {
+        p.store && (
+          <a href={p.store} class="evidence-link">
+            App Store
+          </a>
+        )
+      }
+    </p>
+  </section>
+</BaseLayout>
