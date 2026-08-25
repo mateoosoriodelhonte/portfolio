@@ -27,10 +27,18 @@ const page = await browser.newPage({
 });
 
 await page.goto(base + path, { waitUntil: "networkidle" });
-// Let load-in animations finish, then force all reveals visible for a full capture.
+// Let load-in animations finish, then force reveals visible and lazy images
+// eager so the full-page capture shows real content.
 await page.waitForTimeout(1200);
-await page.evaluate(() => {
+await page.evaluate(async () => {
   document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+  const images = [...document.images];
+  images.forEach((img) => (img.loading = "eager"));
+  await Promise.all(
+    images.map((img) =>
+      img.complete ? Promise.resolve() : new Promise((done) => (img.onload = img.onerror = done)),
+    ),
+  );
 });
 await page.waitForTimeout(700);
 

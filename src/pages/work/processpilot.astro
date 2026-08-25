@@ -1,32 +1,288 @@
 ---
-import BaseLayout from "~/layouts/BaseLayout.astro";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
 
 const p = project("processpilot");
+
+const canSee = [
+  "Process names and sanitized executable identity",
+  "PID relationships and application grouping",
+  "CPU, resident memory, physical memory, swap, load",
+  "Documented spikes, sustained CPU, monotonic growth",
+];
+
+const cannotSee = [
+  "Passwords, keychain, file contents, emails",
+  "Browser history and process-memory contents",
+  "Keystrokes, clipboard, screen, microphone, camera",
+  "Network packet contents",
+];
+
+const endpoints = [
+  "/api/v1/system",
+  "/api/v1/applications?page=1",
+  "/api/v1/processes?page=1",
+  "/api/v1/processes/{pid}",
+  "/api/v1/history?application=…",
+  "/api/v1/anomalies",
+  "/api/v1/events   (SSE)",
+];
 ---
 
-<BaseLayout title={p.name} description={p.tagline}>
-  <section class="container-page pt-20 pb-28 md:pt-28">
-    <p class="eyebrow">{p.domains.join(" · ")}</p>
-    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
-    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
-    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
-    <p class="mt-10 text-sm text-ink-muted">
-      Full case study in progress.
-      {
-        p.repo && (
-          <a href={p.repo} class="evidence-link">
-            Repository
-          </a>
-        )
-      }
-      {
-        p.store && (
-          <a href={p.store} class="evidence-link">
-            App Store
-          </a>
-        )
-      }
+<CaseStudyLayout
+  slug="processpilot"
+  description="Case study: ProcessPilot, a privacy-first read-only macOS process monitor. A Rust telemetry collector feeds a Go analysis service over a one-way JSONL pipe — no admin access, no kill switch, optional local AI."
+>
+  <!-- trust boundary lead -->
+  <div class="container-page">
+    <div class="reveal grid overflow-hidden rounded-xl border border-line md:grid-cols-2">
+      <div class="bg-surface p-8 md:p-10">
+        <p class="eyebrow text-accent">Observes</p>
+        <ul class="mt-6 space-y-3.5">
+          {
+            canSee.map((item) => (
+              <li class="flex gap-3 text-sm leading-relaxed text-ink">
+                <span
+                  class="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-accent"
+                  aria-hidden="true"
+                />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="border-t border-line bg-sunken p-8 md:border-t-0 md:border-l md:p-10">
+        <p class="eyebrow">Cannot see, by construction</p>
+        <ul class="mt-6 space-y-3.5">
+          {
+            cannotSee.map((item) => (
+              <li class="flex gap-3 text-sm leading-relaxed text-ink-muted">
+                <span class="mt-2 h-px w-2.5 flex-none bg-line-strong" aria-hidden="true" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <p class="case-caption reveal">
+      Runs as an ordinary user — no admin access, no Full Disk Access, no Accessibility, no
+      privileged helpers
     </p>
+  </div>
+
+  <CaseSection
+    number="01"
+    label="The problem"
+    title="“What is eating my Mac?” shouldn’t cost your privacy."
+  >
+    <p>
+      The tools that answer that question usually want administrator rights, kernel extensions, or
+      full-disk access — far more than the question requires. ProcessPilot uses ordinary
+      unprivileged macOS telemetry to show what is consuming CPU and memory and explain it in plain
+      language.
+    </p>
+    <p>
+      It observes and explains. <strong>It never controls processes</strong> — there is no kill button,
+      no process-control endpoint, and no arbitrary-command endpoint anywhere in the codebase. The dashboard
+      binds to <code>127.0.0.1</code>, telemetry is never uploaded, and history keeps only
+      one-minute aggregates.
+    </p>
+  </CaseSection>
+
+  <!-- architecture pipeline -->
+  <section class="container-page pt-16 md:pt-24">
+    <div class="reveal hairline-t pt-4">
+      <p class="eyebrow">
+        <span class="text-accent">02</span><span class="mx-1.5" aria-hidden="true">—</span>Two
+        languages, one one-way pipe
+      </p>
+    </div>
+
+    <div class="mt-12 grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr]">
+      <div class="reveal rounded-xl border border-line bg-surface p-7">
+        <p class="font-mono text-[0.7rem] tracking-[0.1em] text-accent uppercase">Rust</p>
+        <h3 class="mt-2 font-display text-title text-ink">Collector</h3>
+        <p class="mt-3 text-sm leading-relaxed text-ink-muted">
+          Narrow, unprivileged telemetry collection from ordinary macOS APIs — normalization and
+          edge redaction before anything leaves the process.
+        </p>
+      </div>
+
+      <div class="reveal flex items-center justify-center px-2" style="--reveal-i:1">
+        <div class="flex flex-col items-center gap-2 lg:w-36">
+          <span class="font-mono text-[0.65rem] tracking-[0.1em] text-ink-faint uppercase">
+            bounded JSONL
+          </span>
+          <span class="pipe-arrow" aria-hidden="true"></span>
+          <span class="font-mono text-[0.65rem] tracking-[0.1em] text-ink-faint uppercase">
+            stdout, one-way
+          </span>
+        </div>
+      </div>
+
+      <div class="reveal rounded-xl border border-line bg-surface p-7" style="--reveal-i:2">
+        <p class="font-mono text-[0.7rem] tracking-[0.1em] text-accent uppercase">Go</p>
+        <h3 class="mt-2 font-display text-title text-ink">Validator + service</h3>
+        <p class="mt-3 text-sm leading-relaxed text-ink-muted">
+          Strict protocol validation, the fixed child-process supervisor, deterministic analysis,
+          SQLite history, localhost HTTP/SSE, CLI, and optional explanations.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+      {
+        [
+          ["In-memory evidence", "current process snapshots never touch disk"],
+          ["Bounded SQLite history", "one-minute aggregates, seven days by default"],
+          ["Localhost UI + read-only CLI", "fixed GET routes on 127.0.0.1"],
+        ].map(([name, detail], i) => (
+          <div class="reveal rounded-xl border border-line p-6" style={`--reveal-i:${i}`}>
+            <h3 class="text-sm font-medium text-ink">{name}</h3>
+            <p class="mt-1.5 text-[0.82rem] leading-relaxed text-ink-muted">{detail}</p>
+          </div>
+        ))
+      }
+    </div>
   </section>
-</BaseLayout>
+
+  <CaseSection number="03" label="The interface" width="wide">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="reveal">
+        <div class="media-frame shadow-soft">
+          <div class="media-inner overflow-hidden bg-sunken">
+            <div class="window-chrome"><span></span><span></span><span></span></div>
+            <div class="space-y-2 px-6 py-7 font-mono text-[0.8rem] leading-loose text-ink-muted">
+              <p><span class="text-accent">$</span> processpilot status</p>
+              <p><span class="text-accent">$</span> processpilot top</p>
+              <p><span class="text-accent">$</span> processpilot inspect 95707</p>
+              <p><span class="text-accent">$</span> processpilot explain 95707</p>
+              <p class="pt-1 text-ink-faint"># deliberately absent:</p>
+              <p class="text-ink-faint"># kill · stop · restart · exec</p>
+            </div>
+          </div>
+        </div>
+        <p class="case-caption">The whole CLI — fixed GET routes, nothing that mutates</p>
+      </div>
+      <div>
+        <div class="case-prose">
+          <p>
+            The web dashboard serves Overview, Applications, Processes, History, Anomalies, Privacy
+            and Settings pages. Every V1 API endpoint is a read-only GET below
+            <code>127.0.0.1</code>:
+          </p>
+        </div>
+        <ul class="mt-6 space-y-2 font-mono text-[0.8rem] text-ink-muted">
+          {
+            endpoints.map((endpoint) => (
+              <li class="reveal hairline-b flex justify-between gap-4 pb-2">
+                <span>{endpoint}</span>
+                <span class="text-[0.65rem] tracking-[0.1em] text-accent uppercase">GET</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="case-prose mt-6">
+          Unknown query parameters and unsupported methods fail closed. There is no CORS opt-in, no
+          command body, and no remote bind option.
+        </p>
+      </div>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="04" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>Why two languages</dt>
+        <dd>
+          Rust owns the narrow, security-sensitive edge: raw telemetry, normalization, redaction. Go
+          owns everything stateful and networked: supervision, validation, analysis, storage, HTTP.
+          The boundary between them is a versioned, one-way JSON Lines pipe — the collector cannot
+          be commanded, only read.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Separating evidence from interpretation</dt>
+        <dd>
+          Observed facts, deterministic classification, conservative stopping risk, and optional
+          explanation text are separate fields with separate rules. Applications are grouped without
+          guessing unknown ownership.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Optional AI, fenced in</dt>
+        <dd>
+          Explanations can come from a local Ollama model over a loopback-only, allowlisted payload
+          — non-loopback endpoints, credentials in URLs, and redirects are rejected. If Ollama is
+          unavailable, the deterministic explanation provider answers instead.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Honest about signing</dt>
+        <dd>
+          V1 release archives are checksummed but not notarized — the project has no Apple Developer
+          signing credentials, and the README says exactly that, recommending a from-source build
+          over weakening Gatekeeper.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="05" label="Verification" title="The release gate runs the paranoid checks.">
+    <p>
+      <code>make check</code> coordinates both languages; release CI additionally runs pinned
+      <code>cargo audit</code>, <code>govulncheck</code>, and <code>npm audit</code>. Browser tests
+      include automated WCAG 2.1 AA checks in desktop and mobile Chromium, and measured overhead is
+      recorded in the repository rather than claimed.
+    </p>
+  </CaseSection>
+
+  <CaseSection number="06" label="Stack and links">
+    <p>
+      Rust · Go · SQLite · Server-Sent Events · Playwright · GitHub Actions — with a Makefile
+      coordinating the two toolchains into sibling binaries.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> ·
+      <a href={`${p.repo}/blob/main/docs/PRIVACY.md`}>Privacy model</a> ·
+      <a href={`${p.repo}/blob/main/docs/THREAT_MODEL.md`}>Threat model</a> ·
+      <a href={`${p.repo}/blob/main/docs/COLLECTOR_PROTOCOL.md`}>Collector protocol</a> ·
+      <a href={`${p.repo}/releases`}>Releases</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>
+
+<style>
+  .pipe-arrow {
+    display: block;
+    width: 100%;
+    min-width: 7rem;
+    height: 1px;
+    position: relative;
+    background: linear-gradient(to right, var(--line-strong) 55%, transparent 0) 0 0 / 7px 1px
+      repeat-x;
+  }
+
+  .pipe-arrow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid var(--line-strong);
+    border-right: 1px solid var(--line-strong);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  @media (max-width: 1023px) {
+    .pipe-arrow {
+      transform: rotate(90deg);
+      min-width: 4rem;
+      margin: 1.2rem 0;
+    }
+  }
+</style>
