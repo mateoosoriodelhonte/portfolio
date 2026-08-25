@@ -1,0 +1,447 @@
+/*
+ * Design system — "Technical Editorial"
+ *
+ * Warm paper-and-ink monochrome, one deep-green accent used for evidence,
+ * links, and verdicts. Editorial serif (Newsreader) for display and reading,
+ * a neutral grotesk (Geist) for UI, and a true monospace (Geist Mono) for
+ * technical annotation. See DESIGN_SYSTEM.md for the reasoning.
+ */
+
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+ * 1. Raw tokens — flipped per theme via [data-theme]
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* surfaces */
+  --paper: #f6f4ef;
+  --surface: #fcfbf8;
+  --surface-sunken: #efece5;
+
+  /* ink */
+  --ink: #1c1a17;
+  --ink-muted: #56524a;
+  --ink-faint: #6f6a60;
+
+  /* structure */
+  --line: rgba(28, 26, 23, 0.12);
+  --line-strong: rgba(28, 26, 23, 0.28);
+
+  /* the single accent — deep viridian, "verified" green */
+  --accent: #226b50;
+  --accent-strong: #17553e;
+  --on-accent: #f6f4ef;
+  --accent-wash: rgba(34, 107, 80, 0.08);
+
+  /* states that are not the accent (used sparingly, chips only) */
+  --caution: #8a5a18;
+  --caution-wash: rgba(138, 90, 24, 0.1);
+
+  /* depth */
+  --shadow-soft: 0 1px 2px rgba(28, 26, 23, 0.04), 0 8px 24px -12px rgba(28, 26, 23, 0.14);
+  --shadow-lift:
+    0 1px 1px rgba(28, 26, 23, 0.05), 0 12px 24px -12px rgba(28, 26, 23, 0.14),
+    0 32px 64px -32px rgba(28, 26, 23, 0.28);
+
+  --grain-opacity: 0.3;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --paper: #151311;
+  --surface: #1c1a17;
+  --surface-sunken: #100f0d;
+
+  --ink: #ece8e0;
+  --ink-muted: #aca69b;
+  --ink-faint: #8b857a;
+
+  --line: rgba(236, 232, 224, 0.12);
+  --line-strong: rgba(236, 232, 224, 0.3);
+
+  --accent: #74bf9d;
+  --accent-strong: #8fd2b3;
+  --on-accent: #10130f;
+  --accent-wash: rgba(116, 191, 157, 0.1);
+
+  --caution: #cfa05c;
+  --caution-wash: rgba(207, 160, 92, 0.12);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-lift:
+    0 1px 1px rgba(0, 0, 0, 0.4), 0 12px 24px -12px rgba(0, 0, 0, 0.5),
+    0 32px 64px -32px rgba(0, 0, 0, 0.7);
+
+  --grain-opacity: 0.25;
+
+  color-scheme: dark;
+}
+
+/* ---------------------------------------------------------------------------
+ * 2. Tailwind theme mapping
+ * ------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-*: initial;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
+  --color-accent-wash: var(--accent-wash);
+  --color-caution: var(--caution);
+  --color-caution-wash: var(--caution-wash);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-newsreader);
+  --font-mono: var(--font-geist-mono);
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+
+  --ease-out-quart: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swift: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* fluid display sizes */
+  --text-display-xl: clamp(2.9rem, 1.9rem + 4.6vw, 6.1rem);
+  --text-display-xl--line-height: 1.02;
+  --text-display-xl--letter-spacing: -0.028em;
+  --text-display: clamp(2.1rem, 1.55rem + 2.4vw, 3.7rem);
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.024em;
+  --text-title: clamp(1.45rem, 1.25rem + 0.9vw, 2.05rem);
+  --text-title--line-height: 1.18;
+  --text-title--letter-spacing: -0.014em;
+  --text-lede: clamp(1.1rem, 1.02rem + 0.4vw, 1.35rem);
+  --text-lede--line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------------------
+ * 3. Base
+ * ------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    background-color: var(--paper);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-geist), system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Newsreader carries an optical-size axis — let large text use it */
+  .font-display {
+    font-optical-sizing: auto;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-feature-settings: "calt" 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 4. Recurring pieces — the house motifs
+ * ------------------------------------------------------------------------- */
+
+@utility eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--line);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--line);
+}
+
+@layer components {
+  /* container rhythm */
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 76rem;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* dotted evidence link — a claim that can be checked */
+  .evidence-link {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.3em;
+    text-decoration-thickness: 1px;
+    transition:
+      text-decoration-color 0.25s var(--ease-out-quart),
+      color 0.25s var(--ease-out-quart);
+  }
+
+  .evidence-link:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  /* running-text link with growing underline */
+  .link-under {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 calc(100% - 0.1em);
+    background-repeat: no-repeat;
+    transition:
+      background-size 0.35s var(--ease-out-quart),
+      color 0.25s var(--ease-out-quart);
+  }
+
+  .link-under:hover,
+  .link-under:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  /* verdict / status chip */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    background: var(--surface);
+    white-space: nowrap;
+  }
+
+  .chip-dot {
+    width: 0.32rem;
+    height: 0.32rem;
+    border-radius: 9999px;
+    background: currentColor;
+    flex: none;
+  }
+
+  .chip--go {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    background: var(--accent-wash);
+  }
+
+  .chip--open {
+    color: var(--caution);
+    border-color: color-mix(in srgb, var(--caution) 35%, transparent);
+    background: var(--caution-wash);
+  }
+
+  /* buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 0.85rem 1.4rem;
+    border-radius: 0.55rem;
+    border: 1px solid transparent;
+    transition:
+      transform 0.18s var(--ease-swift),
+      background-color 0.25s var(--ease-out-quart),
+      border-color 0.25s var(--ease-out-quart),
+      color 0.25s var(--ease-out-quart);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-strong);
+    color: var(--on-accent);
+  }
+
+  [data-theme="dark"] .btn-primary:hover {
+    background: var(--accent);
+  }
+
+  .btn-ghost {
+    border-color: var(--line-strong);
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--ink);
+    background: var(--surface);
+  }
+
+  .btn .btn-arrow {
+    transition: transform 0.3s var(--ease-out-quart);
+  }
+
+  .btn:hover .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  /* framed media — screenshots sit in a shallow tray, never flat */
+  .media-frame {
+    background: var(--surface-sunken);
+    border: 1px solid var(--line);
+    border-radius: 0.9rem;
+    padding: 0.45rem;
+  }
+
+  .media-frame > img,
+  .media-frame > picture img,
+  .media-frame > .media-inner {
+    border-radius: 0.55rem;
+    border: 1px solid var(--line);
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* faux window chrome for app screenshots */
+  .window-chrome {
+    display: flex;
+    gap: 0.32rem;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .window-chrome span {
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 9999px;
+    background: var(--line-strong);
+    opacity: 0.55;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 5. Motion — reveal-on-scroll, staggering, view transitions
+ * ------------------------------------------------------------------------- */
+
+@layer components {
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s var(--ease-out-quart),
+      transform 0.7s var(--ease-out-quart);
+    transition-delay: calc(var(--reveal-i, 0) * 70ms);
+  }
+
+  html.js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/* Page transitions: quiet cross-fade with a slight rise */
+::view-transition-old(root) {
+  animation: vt-out 0.22s var(--ease-swift) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 0.34s var(--ease-out-quart) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 6. Paper grain — fixed, non-interactive, cheap
+ * ------------------------------------------------------------------------- */
+
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
