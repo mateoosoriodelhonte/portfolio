@@ -6,8 +6,10 @@ import ArrowLink from "~/components/ArrowLink.astro";
 import { links, withBase } from "~/lib/site";
 import { project } from "~/lib/projects";
 import { sandploverPrState } from "~/lib/github";
+import { publishedPosts, formatDate } from "~/lib/blog";
 
 const pr = await sandploverPrState();
+const latestPosts = (await publishedPosts()).filter((p) => !p.data.draft).slice(0, 3);
 const reposignal = project("reposignal");
 const studyforge = project("studyforge");
 const processpilot = project("processpilot");
@@ -380,10 +382,38 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
     </div>
   </section>
 
+  <!-- ---------------------------------------------------------- writing -->
+  <section class="hairline-t">
+    <div class="container-page py-20 md:py-24">
+      <SectionHeader number="06" label="Writing">
+        <ArrowLink slot="aside" href={withBase("/blog/")} class="hidden sm:inline-flex">
+          All posts
+        </ArrowLink>
+      </SectionHeader>
+      <div class="mt-10 grid gap-x-10 gap-y-0 md:grid-cols-3">
+        {
+          latestPosts.map((post, i) => (
+            <a href={withBase(`/blog/${post.id}/`)} class="group reveal" style={`--reveal-i:${i}`}>
+              <article class="hairline-t py-6 md:border-t-0 md:pt-1">
+                <p class="font-mono text-[0.68rem] tracking-[0.1em] text-ink-faint uppercase">
+                  {formatDate(post.data.pubDate)}
+                </p>
+                <h3 class="mt-3 font-display text-title leading-snug text-ink transition-colors group-hover:text-accent">
+                  {post.data.title}
+                </h3>
+                <p class="mt-3 text-sm leading-relaxed text-ink-muted">{post.data.description}</p>
+              </article>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- ---------------------------------------------------------- closing -->
   <section class="hairline-t">
     <div class="container-page flex flex-col items-start py-28 md:py-40">
-      <p class="reveal eyebrow">06 — Contact</p>
+      <p class="reveal eyebrow">07 — Contact</p>
       <h2
         class="reveal mt-8 max-w-[16ch] font-display text-display-xl text-ink"
         style="--reveal-i:1"

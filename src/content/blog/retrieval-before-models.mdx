@@ -1,0 +1,45 @@
+---
+title: "RAG: retrieval quality before model quality"
+description: "When a grounded system gives a bad answer, the model is rarely the first place to look. Retrieval is where RAG systems are won, lost, and debugged."
+pubDate: 2026-08-22
+category: "AI / RAG"
+---
+
+The standard failure story for a retrieval-augmented system goes like this: the answer was wrong, so the team swaps in a bigger model, and the answer is now wrong _more fluently_. The evidence the model needed was never retrieved, or was retrieved and buried under twelve less-relevant chunks. No model fixes that.
+
+Retrieval-augmented generation has the emphasis in the wrong place. The generation is the last step and often the easy one. The system's ceiling is set earlier: what got indexed, what got retrieved, what got selected into a finite context window.
+
+## The pipeline before the model
+
+A grounded answer passes through stages that are each measurable on their own:
+
+1. **Indexing** — is the material even reachable? Chunked at boundaries that preserve meaning, fresh enough to be true, access-controlled enough to be safe?
+2. **Retrieval** — for this question, do the relevant passages appear in the candidate set at all?
+3. **Selection** — of the candidates, what survives ranking into the context budget?
+4. **Generation** — given exactly that evidence, is the synthesis faithful?
+
+When step 2 fails, no prompt at step 4 helps. And each step can be evaluated deterministically: recall of known-relevant passages, rank of the right answer, budget utilization. You don't need an LLM judge to tell you your retriever missed the passage the answer lives in.
+
+## Chunking is where meaning survives or doesn't
+
+The unglamorous work is upstream. In [StudyForge](/work/studyforge/), documents are normalised before anything else — hyphenation rejoined, hard line-wraps unwrapped, page numbers stripped — and then split at _semantic_ boundaries: headings first, then paragraphs, then sentences. Retrieval quality was decided right there. A chunk that slices a definition in half will never be retrieved usefully, no matter what embeds it.
+
+## Use the smallest retriever that answers the question
+
+StudyForge's "Ask my notes" retrieves passages from your own material using SQLite's FTS5 — lexical full-text search, no embeddings, no vector store. At one person's document scale, that was the honest engineering call: FTS5 is fast, deterministic, debuggable with a query, and installed with the database you already have. Adding a vector database to search a few thousand paragraphs would have been architecture for its own sake.
+
+Semantic retrieval earns its complexity when vocabulary genuinely diverges — when users ask about "revenue recognition" and the document says "when we book income." Hybrid setups, where lexical and semantic candidates merge and a reranker orders them, exist precisely because neither signal is sufficient alone. But hybrid-with-reranking is a budget you should have to justify, not a default you cargo-cult.
+
+## Context windows are budgets, not buckets
+
+Selection is its own discipline. Every passage admitted to the context displaces another, and models attend unevenly across long contexts. The practical consequences:
+
+- rank hard, then cut hard — a smaller context of better evidence beats a stuffed one
+- keep provenance attached, so the output can cite what it used
+- leave things out on purpose; "might be relevant" is how windows die
+
+That last habit has a name now — context engineering — but it's the same editorial judgment technical writing has always required: what does the reader need on this page, and in what order?
+
+## Retrieval is the part you can prove
+
+The reason I keep the emphasis on retrieval isn't only that it fails first. It's that it's the part of an AI system you can hold to the standard the rest of engineering already meets: fixed inputs, expected outputs, regression tests. The generation step may stay probabilistic. Whether the right evidence was on the model's desk when it answered doesn't have to be.

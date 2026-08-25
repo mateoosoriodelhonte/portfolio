@@ -1,0 +1,51 @@
+---
+title: "Missing data is not failure"
+description: "The most common way software lies is by turning “I don't know” into a zero. Designing for honest unknowns changes your types, your tests, and your users' trust."
+pubDate: 2026-08-16
+category: "Engineering"
+---
+
+Ask a dashboard a question it cannot answer and it will usually answer anyway. The API timed out, the permission was missing, the statistics were never computed — and somewhere between the data layer and the screen, all of that became a `0`. The chart renders. The number is wrong. Nobody can tell.
+
+I've now built three tools whose whole value depends on refusing to do this, and the refusal turned out to be an architectural decision, not a display preference.
+
+## A zero is a claim
+
+`0%` is not a neutral value. It is a strong, specific claim: _we measured this, and there was none of it._ When a system emits that claim because a request failed, it is fabricating evidence — confidently, in the direction most likely to alarm someone.
+
+[RepoSignal](/work/reposignal/) analyzes how GitHub repositories are engineered. GitHub sometimes hasn't computed commit statistics for a repository; sometimes an API needs a permission the analyzer doesn't have. A repository whose data is unavailable is not unhealthy. It is _unmeasured_ — and those need to be different values in the type system:
+
+```ts
+// Not this:
+interface CategoryScore {
+  score: number; // 0 means... failed? empty? unknown?
+}
+
+// This:
+interface CategoryScore {
+  score: number | null; // null means: could not be observed
+  observed: MetricObservation[]; // what the score is built from
+}
+```
+
+Once `null` exists as a first-class state, it has to survive the whole journey. A category with too little data scores `null`, is excluded from the overall score, and its weight is redistributed across the categories that did produce evidence. The invariant is enforced by a test, not a comment: **adding a null category can never lower the overall score.** If someone later "simplifies" a null into a zero, CI fails.
+
+## Unknown is a verdict
+
+[Gatehouse](/work/gatehouse/) reduces a pull request's state to one verdict: `GO`, `REVIEW`, `BLOCKED`, `DRAFT` — or `UNKNOWN`. The last one is the load-bearing verdict. When a check hasn't reported or a permission blocks a fact, the honest output is not an optimistic `GO` or a pessimistic `BLOCKED`. It is a typed, first-class _I can't know this yet_, with the missing evidence named.
+
+This is uncomfortable to build because `UNKNOWN` feels like a failure of the tool. It isn't. A decision aid that guesses is worse than no decision aid, because people stop double-checking it precisely when it's wrong.
+
+## The sample is part of the number
+
+[StudyForge](/work/studyforge/) tracks learning accuracy, and learning data starts tiny. Two correct answers is not "100% mastery" — it's two answers. So every rate in the interface carries its denominator (_88%, from 8 answers_), a concept with two reviews is labeled "not enough data" rather than "mastered", and a rate with no data renders as **—**, never as `0%`.
+
+The pattern generalizes: a percentage without its sample size is a number stripped of its evidence. Attaching the sample isn't clutter. It's the difference between reporting and implying.
+
+## What this costs, and what it buys
+
+Honest unknowns are more work everywhere: union types instead of primitives, extra UI states, tests for the paths where data is absent, copy that explains _why_ something is unverifiable. The null path roughly doubles the states your interface must design for.
+
+What it buys is the only kind of trust that matters for an analytical tool: when the number _is_ there, people believe it. A system that visibly declines to guess earns the right to be taken literally.
+
+The rule I now start from: **every value that can be unknown must be representable as unknown, distinguishable from zero, and visible as unknown all the way to the screen.** Everything else in these projects — the type design, the weight redistribution, the test suites full of absence cases — is downstream of that sentence.

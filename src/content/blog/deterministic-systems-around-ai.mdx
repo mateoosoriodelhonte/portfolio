@@ -1,0 +1,44 @@
+---
+title: "Building deterministic systems around AI"
+description: "The useful question isn't whether to use a language model. It's deciding — precisely, in the architecture — what the model is allowed to touch."
+pubDate: 2026-08-19
+category: "AI / RAG"
+---
+
+Every project I ship with an AI feature starts from the same architectural question: **which parts of this system must be reproducible?** Those parts get pure functions, exhaustive tests, and a hard boundary the model cannot cross. The model gets what's left — the parts where fluency helps and being occasionally wrong is survivable.
+
+This sounds obvious written down. In practice, most AI-era products get it backwards: the model sits in the middle, and determinism is retrofitted around whatever it produces.
+
+## Decide what the model may never touch
+
+In [StudyForge](/work/studyforge/), the spaced-repetition scheduler and the weak-concept analysis are marked in the docs as _never uses AI, by design_ — as opposed to _not implemented_. Scheduling is closed-form arithmetic. Handing it to a probabilistic text generator would make it unreproducible and untestable, so the architecture makes the handoff impossible: the domain layer imports nothing from any AI provider, which means no code path exists from a model to the scheduler.
+
+[RepoSignal](/work/reposignal/) draws the same line for scoring. The same repository snapshot always yields the same score; every threshold is unit-tested; a user who disagrees can be shown the exact rule that fired. An LLM-generated score is none of those things. AI stays a possible _presentation_ layer — rephrasing finished findings — and is structurally barred from computing or adjusting a number.
+
+The pattern: don't write a policy that says the model shouldn't do X. Arrange the imports and interfaces so it _can't_.
+
+## Make degradation a first-class path
+
+If the AI path is optional, the system needs to be genuinely complete without it — not "reduced functionality," complete. StudyForge is fully functional with `AI_PROVIDER=none`, which is the default. [ProcessPilot](/work/processpilot/) explains processes with a deterministic provider and only upgrades the wording when a local Ollama model is available. If the model is missing, both tools say so and carry on.
+
+That changes what "AI feature" means: it's an enhancement to a working deterministic path, never a dependency. A study tool that stops working when a provider is down is not a study tool.
+
+## Fence the transport, not just the prompt
+
+Where a model _is_ integrated, the integration is treated like any other untrusted network dependency:
+
+- **Loopback only.** ProcessPilot and [TraceMark](/work/tracemark/) talk to Ollama on `127.0.0.1` and reject non-loopback endpoints, credentials embedded in URLs, and redirects.
+- **Allowlisted payloads.** What gets sent is enumerated — selected fields of selected records — not "the context."
+- **Explicit consent.** TraceMark's Firefox build requires two separate user actions before the loopback origin is even granted, rechecks the grant before every request, and fails closed if it was revoked.
+
+## Test the failure modes, not the demo
+
+None of my CI pipelines contact a live model. Every AI code path is exercised against a mock transport that can produce the unfriendly cases on demand: timeouts, malformed responses, refusals, half-finished output. The deterministic core is tested with golden vectors — StudyForge's scheduler was verified against the reference FSRS implementation across 4,096 review transitions before being frozen.
+
+This is the part I'd defend hardest. A demo proves a model can succeed; an engineering process has to prove the _system_ behaves when the model doesn't.
+
+## The boundary is the product
+
+What users actually trust in these tools is not the AI — it's the visible boundary around it. The settings page that says exactly what is active and what leaves the machine. The label that distinguishes _computed_ from _generated_. The verdict that comes from rules, accompanied by prose that came from a model and says so.
+
+Models will keep improving. The boundary work — deciding what must be reproducible, keeping the model on the right side of that line, and proving it with tests — is the part that stays engineering.
