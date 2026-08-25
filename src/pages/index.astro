@@ -485,16 +485,21 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
 
   .hero-line-inner {
     display: block;
-    transform: translateY(115%);
-    animation: hero-rise 0.9s var(--ease-out-quart) forwards;
-    animation-delay: calc(var(--hero-i) * 90ms + 100ms);
   }
 
-  .hero-item {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: hero-fade 0.8s var(--ease-out-quart) forwards;
-    animation-delay: calc(var(--hero-i) * 90ms + 150ms);
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-line-inner {
+      transform: translateY(115%);
+      animation: hero-rise 0.9s var(--ease-out-quart) forwards;
+      animation-delay: calc(var(--hero-i) * 90ms + 100ms);
+    }
+
+    .hero-item {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: hero-fade 0.8s var(--ease-out-quart) forwards;
+      animation-delay: calc(var(--hero-i) * 90ms + 150ms);
+    }
   }
 
   @keyframes hero-rise {
@@ -507,15 +512,6 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
     to {
       opacity: 1;
       transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-line-inner,
-    .hero-item {
-      animation: none;
-      transform: none;
-      opacity: 1;
     }
   }
 

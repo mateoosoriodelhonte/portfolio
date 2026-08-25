@@ -95,6 +95,13 @@ function closeMenu() {
 
 function onScroll() {
   document.querySelector("#site-header")?.classList.toggle("is-scrolled", window.scrollY > 8);
+
+  // At the very bottom nothing further can scroll into view — show the rest.
+  if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+    document
+      .querySelectorAll(".reveal:not(.is-visible)")
+      .forEach((el) => el.classList.add("is-visible"));
+  }
 }
 
 /* --------------------------------------------------------------- reveals */
@@ -117,7 +124,9 @@ function initPage() {
   observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
+        // Reveal when entering the viewport — or when already above it,
+        // so fast scrolls and anchor jumps never leave sections hidden.
+        if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
           entry.target.classList.add("is-visible");
           observer?.unobserve(entry.target);
         }

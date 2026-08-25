@@ -22,7 +22,7 @@
   /* ink */
   --ink: #1c1a17;
   --ink-muted: #56524a;
-  --ink-faint: #6f6a60;
+  --ink-faint: #67625b;
 
   /* structure */
   --line: rgba(28, 26, 23, 0.12);
@@ -35,7 +35,7 @@
   --accent-wash: rgba(34, 107, 80, 0.08);
 
   /* states that are not the accent (used sparingly, chips only) */
-  --caution: #8a5a18;
+  --caution: #7d5114;
   --caution-wash: rgba(138, 90, 24, 0.1);
 
   /* depth */
@@ -618,25 +618,21 @@
  * ------------------------------------------------------------------------- */
 
 @layer components {
-  html.js .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity 0.7s var(--ease-out-quart),
-      transform 0.7s var(--ease-out-quart);
-    transition-delay: calc(var(--reveal-i, 0) * 70ms);
-  }
-
-  html.js .reveal.is-visible {
-    opacity: 1;
-    transform: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
+  /* Hidden-until-revealed exists only when motion is wanted, so no
+     override race can ever strand content invisible. */
+  @media (prefers-reduced-motion: no-preference) {
     html.js .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.7s var(--ease-out-quart),
+        transform 0.7s var(--ease-out-quart);
+      transition-delay: calc(var(--reveal-i, 0) * 70ms);
+    }
+
+    html.js .reveal.is-visible {
       opacity: 1;
       transform: none;
-      transition: none;
     }
   }
 }
