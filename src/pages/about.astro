@@ -1,0 +1,117 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import ArrowLink from "~/components/ArrowLink.astro";
+import { links, withBase } from "~/lib/site";
+---
+
+<BaseLayout
+  title="About"
+  description="About Mateo Osorio Delhonte — a software engineer from Lima, Peru, now in Utah, building production platforms, developer tools, and grounded AI systems."
+>
+  <section class="container-page pt-20 pb-16 md:pt-28">
+    <p class="eyebrow">About</p>
+    <h1 class="mt-6 max-w-3xl font-display text-display-xl text-ink">
+      Lima <span aria-hidden="true" class="text-accent">→</span> Utah, via a lot of
+      <em class="italic text-accent">terminals</em>.
+    </h1>
+  </section>
+
+  <section class="container-page pb-24 md:pb-32">
+    <div class="grid gap-x-14 gap-y-12 lg:grid-cols-12">
+      <div class="case-prose lg:col-span-7">
+        <p>
+          I’m Mateo Osorio Delhonte, a software engineer from Lima, Peru, now living in Utah — where
+          I build client-facing product platforms by day and an ecosystem of my own tools the rest
+          of the time, alongside research-assistant work at Southern Utah University.
+        </p>
+        <p>
+          The through-line in everything I make is on this site’s first screen: <strong
+            >software should be able to show its work.</strong
+          > I keep building the same conviction into different shapes — a repository analyzer where every
+          score expands into its evidence, a study system that refuses to claim you’ve mastered something
+          after two answers, a process monitor that explains instead of guessing, a PR dashboard whose
+          most important verdict is <span class="font-mono text-[0.85em]">UNKNOWN</span>.
+        </p>
+        <p>
+          That conviction extends to how I use AI. I build with models and I’m genuinely optimistic
+          about them — as long as the system around them retrieves real evidence, keeps
+          deterministic work deterministic, and validates output before it counts. The
+          <a href={withBase("/ai/")}>grounded-AI page</a> is the long version.
+        </p>
+        <p>
+          Away from a keyboard: cooking ambitiously enough that I eventually shipped
+          <a href={withBase("/work/shoppinlyst/")}>a grocery app</a> about it.
+        </p>
+      </div>
+
+      <aside class="lg:col-span-4 lg:col-start-9">
+        <div class="hairline-t space-y-0 lg:sticky lg:top-24">
+          {
+            [
+              ["From", "Lima, Peru"],
+              ["Based in", "Utah, United States"],
+              ["Day job", "Platform engineering, SolutionStream"],
+              ["Also", "Research assistant, SUU"],
+              ["Languages spoken", "Spanish, English"],
+            ].map(([key, value]) => (
+              <div class="hairline-b flex items-baseline justify-between gap-6 py-3.5">
+                <span class="font-mono text-[0.68rem] tracking-[0.12em] text-ink-faint uppercase">
+                  {key}
+                </span>
+                <span class="text-right text-sm text-ink">{value}</span>
+              </div>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- contact -->
+  <section id="contact" class="hairline-t bg-surface">
+    <div class="container-page py-24 md:py-32">
+      <div class="grid items-center gap-x-14 gap-y-10 lg:grid-cols-12">
+        <div class="lg:col-span-7">
+          <p class="reveal eyebrow">Contact</p>
+          <h2 class="reveal mt-6 font-display text-display text-ink">
+            Let’s build something <em class="italic text-accent">useful</em>.
+          </h2>
+          <p class="reveal mt-5 max-w-lg text-ink-muted" style="--reveal-i:1">
+            The reliable channels are LinkedIn for conversation and GitHub for anything about the
+            projects. If you’re writing about a role, a sentence on what your team is building goes
+            a long way.
+          </p>
+        </div>
+        <div class="reveal flex flex-wrap gap-4 lg:col-span-5 lg:justify-end" style="--reveal-i:2">
+          <a href={links.linkedin} class="btn btn-primary">LinkedIn</a>
+          <a href={links.github} class="btn btn-ghost">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- colophon -->
+  <section class="container-page py-20 md:py-24">
+    <div class="grid gap-x-14 gap-y-8 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="reveal eyebrow">This site</p>
+      </div>
+      <div class="reveal lg:col-span-8">
+        <p class="max-w-2xl text-sm leading-relaxed text-ink-muted">
+          Built with Astro, TypeScript, and Tailwind — static HTML, no client framework, no
+          trackers, no analytics. Type is Newsreader, Geist, and Geist Mono, self-hosted. Every
+          project claim links to a public repository, release, or store listing, and the open-source
+          PR state is verified against the GitHub API at build time. The site practices what the
+          portfolio preaches:
+          <a href="https://github.com/mateoosoriodelhonte/portfolio" class="link-under text-ink"
+            >its source is public</a
+          >.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+          <ArrowLink href={withBase("/experience/")}>Experience</ArrowLink>
+          <ArrowLink href={withBase("/resume/")}>Resume</ArrowLink>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { withBase } from "~/lib/site";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="This page could not be verified. It probably does not exist."
+>
+  <section class="container-page flex min-h-[calc(100svh-4rem)] flex-col justify-center py-20">
+    <p class="chip w-fit"><span class="chip-dot" aria-hidden="true"></span>404 · Unknown</p>
+    <h1 class="mt-8 max-w-[16ch] font-display text-display-xl text-ink">
+      This page can’t <em class="italic text-accent">show its work</em>.
+    </h1>
+    <p class="mt-6 max-w-md text-lede text-ink-muted">
+      No evidence of it anywhere — and around here, a claim without evidence doesn’t ship. The
+      address may have changed, or never existed.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-4">
+      <a href={withBase("/")} class="btn btn-primary">Back to the homepage</a>
+      <a href={withBase("/work/")} class="btn btn-ghost">See the work</a>
+    </div>
+  </section>
+</BaseLayout>
