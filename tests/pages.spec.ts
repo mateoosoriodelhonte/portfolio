@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const routes: [path: string, h1: string | RegExp][] = [
-  [".", /Software that shows its work/],
+  [".", /Mateo Osorio Delhonte/],
   ["work/", /Six projects/],
   ["work/reposignal/", "RepoSignal"],
   ["work/studyforge/", "StudyForge"],

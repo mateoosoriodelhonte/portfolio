@@ -1,7 +1,11 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import ArrowLink from "~/components/ArrowLink.astro";
 import { links, withBase } from "~/lib/site";
+import headshot from "~/assets/mateo/headshot.jpg";
+import thumbsUp from "~/assets/mateo/thumbs-up.jpg";
+import convertible from "~/assets/mateo/convertible.jpg";
 ---
 
 <BaseLayout
@@ -45,25 +49,64 @@ import { links, withBase } from "~/lib/site";
       </div>
 
       <aside class="lg:col-span-4 lg:col-start-9">
-        <div class="hairline-t space-y-0 lg:sticky lg:top-24">
-          {
-            [
-              ["From", "Lima, Peru"],
-              ["Based in", "Utah, United States"],
-              ["Day job", "Platform engineering, SolutionStream"],
-              ["Also", "Research assistant, SUU"],
-              ["Languages spoken", "Spanish, English"],
-            ].map(([key, value]) => (
-              <div class="hairline-b flex items-baseline justify-between gap-6 py-3.5">
-                <span class="font-mono text-[0.68rem] tracking-[0.12em] text-ink-faint uppercase">
-                  {key}
-                </span>
-                <span class="text-right text-sm text-ink">{value}</span>
-              </div>
-            ))
-          }
+        <div class="lg:sticky lg:top-24">
+          <figure class="reveal mb-8">
+            <div class="media-frame shadow-soft">
+              <Image
+                src={headshot}
+                alt="Portrait of Mateo Osorio Delhonte in a gray crewneck against a gray studio background"
+                widths={[360, 560, 900]}
+                sizes="(min-width: 1024px) 24vw, 88vw"
+                loading="eager"
+              />
+            </div>
+          </figure>
+          <div class="hairline-t space-y-0">
+            {
+              [
+                ["From", "Lima, Peru"],
+                ["Based in", "Utah, United States"],
+                ["Day job", "AI Engineer, SolutionStream"],
+                ["Also", "Research assistant, SUU"],
+                ["Languages spoken", "Spanish, English"],
+              ].map(([key, value]) => (
+                <div class="hairline-b flex items-baseline justify-between gap-6 py-3.5">
+                  <span class="font-mono text-[0.68rem] tracking-[0.12em] text-ink-faint uppercase">
+                    {key}
+                  </span>
+                  <span class="text-right text-sm text-ink">{value}</span>
+                </div>
+              ))
+            }
+          </div>
         </div>
       </aside>
+    </div>
+
+    <!-- off duty -->
+    <div class="mt-20 grid gap-6 sm:grid-cols-2 lg:mt-24">
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={convertible}
+            alt="Mateo smiling in sunglasses, riding in a convertible with the top down on a sunny day"
+            widths={[480, 720, 1100]}
+            sizes="(min-width: 640px) 46vw, 92vw"
+          />
+        </div>
+        <figcaption class="case-caption">Top down, sun out</figcaption>
+      </figure>
+      <figure class="reveal" style="--reveal-i:1">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={thumbsUp}
+            alt="Mateo in a blue LA cap giving a thumbs up at a restaurant table"
+            widths={[480, 720, 1100]}
+            sizes="(min-width: 640px) 46vw, 92vw"
+          />
+        </div>
+        <figcaption class="case-caption">Thumbs up — the menu passed review</figcaption>
+      </figure>
     </div>
   </section>
 

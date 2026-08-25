@@ -180,7 +180,49 @@ const capabilities = [
     </div>
   </CaseSection>
 
-  <CaseSection number="06" label="Engineering decisions" width="wide">
+  <CaseSection number="06" label="Inside the product" width="wide">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.dashboard!}
+            alt="The StudyForge dashboard: what is due today, what needs work, and recent courses"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">Dashboard — what is due, and what needs work</figcaption>
+      </figure>
+      <figure class="reveal" style="--reveal-i:1">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.ask!}
+            alt="StudyForge's Ask-my-notes view retrieving relevant passages from the user's own documents, working with no AI configured"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">
+          “Ask my notes” — retrieval from your own material, no AI required
+        </figcaption>
+      </figure>
+    </div>
+    <figure class="reveal mt-8">
+      <div class="media-frame shadow-soft">
+        <Image
+          src={p.images.document!}
+          alt="A StudyForge document view showing extraction results, chunks, and the provenance of each generated card"
+          widths={[640, 1080, 1600]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+        />
+      </div>
+      <figcaption class="case-caption">
+        Every generated card traces back to the exact passage it came from
+      </figcaption>
+    </figure>
+  </CaseSection>
+
+  <CaseSection number="07" label="Engineering decisions" width="wide">
     <dl class="grid gap-x-12 lg:grid-cols-2">
       <div class="decision reveal">
         <dt>SQLite, deliberately</dt>
@@ -217,7 +259,7 @@ const capabilities = [
     </dl>
   </CaseSection>
 
-  <CaseSection number="07" label="Testing" title="695 tests, including the unfriendly ones.">
+  <CaseSection number="08" label="Testing" title="695 tests, including the unfriendly ones.">
     <p>
       Coverage includes golden vectors for the scheduler, determinism assertions (chunking,
       extraction, generation and queue building produce identical output across repeated runs), and
@@ -227,7 +269,7 @@ const capabilities = [
     </p>
   </CaseSection>
 
-  <CaseSection number="08" label="Stack and links">
+  <CaseSection number="09" label="Stack and links">
     <p>
       Python 3.12 · FastAPI · Jinja2 + HTMX · SQLAlchemy 2 (typed) · Alembic · SQLite + FTS5 ·
       Pydantic 2 · pypdf · uv · Ruff · mypy <code>--strict</code> · pytest · Playwright · GitHub Actions.

@@ -7,6 +7,7 @@ import { links, withBase } from "~/lib/site";
 import { project } from "~/lib/projects";
 import { sandploverPrState } from "~/lib/github";
 import { publishedPosts, formatDate } from "~/lib/blog";
+import headshot from "~/assets/mateo/headshot.jpg";
 
 const pr = await sandploverPrState();
 const latestPosts = (await publishedPosts()).filter((p) => !p.data.draft).slice(0, 3);
@@ -24,32 +25,29 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
 
     <div class="container-page relative">
       <div class="flex min-h-[calc(100svh-4rem)] flex-col justify-center pt-16 pb-24">
-        <p class="hero-item eyebrow" style="--hero-i:0">
-          <span class="hidden sm:inline"
-            >Mateo Osorio Delhonte <span class="mx-2" aria-hidden="true">/</span></span
-          >
-          Software Engineer
-        </p>
+        <p class="hero-item eyebrow" style="--hero-i:0">Software Engineer</p>
 
-        <h1 class="mt-7 max-w-[13ch] font-display text-display-xl font-normal text-ink">
+        <h1 class="mt-7 font-display text-display-xl font-normal text-ink">
           <span class="hero-line"
-            ><span class="hero-line-inner" style="--hero-i:1">Software</span></span
+            ><span class="hero-line-inner" style="--hero-i:1">Mateo</span></span
           >
           <span class="hero-line"
             ><span class="hero-line-inner" style="--hero-i:2"
-              >that <em class="italic text-accent">shows</em></span
-            ></span
-          >
-          <span class="hero-line"
-            ><span class="hero-line-inner" style="--hero-i:3"
-              >its <em class="italic">work</em>.</span
+              >Osorio Delhonte<span class="text-accent">.</span></span
             ></span
           >
         </h1>
 
-        <p class="hero-item mt-8 max-w-xl text-lede text-ink-muted" style="--hero-i:4">
-          I build reliable systems, developer tools, and grounded AI — engineered so every claim is
-          traceable, and missing data is never mistaken for failure.
+        <p
+          class="hero-item mt-6 max-w-2xl font-display text-title leading-snug text-ink"
+          style="--hero-i:3"
+        >
+          I build software that <em class="text-accent italic">shows its work</em> — reliable systems,
+          developer tools, and grounded AI.
+        </p>
+
+        <p class="hero-item mt-6 max-w-xl text-lede text-ink-muted" style="--hero-i:4">
+          Engineered so every claim is traceable, and missing data is never mistaken for failure.
         </p>
 
         <div class="hero-item mt-10 flex flex-wrap items-center gap-4" style="--hero-i:5">
@@ -328,8 +326,8 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
         </div>
         <div class="lg:col-span-8">
           <p class="reveal max-w-2xl font-display text-title leading-snug text-ink">
-            Platform engineering at <span class="text-accent">SolutionStream</span>, building
-            client-facing product on the New Reward platform — React and Next.js frontends, APIs and
+            AI engineering at <span class="text-accent">SolutionStream</span>, building
+            client-facing product — AI-driven features, React and Next.js frontends, APIs and
             PostgreSQL data systems, and the QA and release validation that keeps them trustworthy.
           </p>
           <div class="reveal mt-7" style="--reveal-i:1">
@@ -412,38 +410,53 @@ const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse"
 
   <!-- ---------------------------------------------------------- closing -->
   <section class="hairline-t">
-    <div class="container-page flex flex-col items-start py-28 md:py-40">
-      <p class="reveal eyebrow">07 — Contact</p>
-      <h2
-        class="reveal mt-8 max-w-[16ch] font-display text-display-xl text-ink"
-        style="--reveal-i:1"
-      >
-        Let’s build something <em class="italic text-accent">useful</em>.
-      </h2>
-      <p class="reveal mt-6 max-w-md text-ink-muted" style="--reveal-i:2">
-        I’m happiest working where reliability, tooling, and product quality meet. If that’s your
-        team, say hello.
-      </p>
-      <div class="reveal mt-10 flex flex-wrap gap-4" style="--reveal-i:3">
-        <a href={links.linkedin} class="btn btn-primary">
-          Reach me on LinkedIn
-          <svg
-            class="btn-arrow"
-            width="15"
-            height="15"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M3 13 13 3M5.5 3H13v7.5"></path>
-          </svg>
-        </a>
-        <a href={links.github} class="btn btn-ghost">GitHub</a>
+    <div class="container-page grid items-center gap-x-14 gap-y-12 py-28 md:py-40 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <p class="reveal eyebrow">07 — Contact</p>
+        <h2
+          class="reveal mt-8 max-w-[16ch] font-display text-display-xl text-ink"
+          style="--reveal-i:1"
+        >
+          Let’s build something <em class="italic text-accent">useful</em>.
+        </h2>
+        <p class="reveal mt-6 max-w-md text-ink-muted" style="--reveal-i:2">
+          I’m happiest working where reliability, tooling, and product quality meet. If that’s your
+          team, say hello.
+        </p>
+        <div class="reveal mt-10 flex flex-wrap gap-4" style="--reveal-i:3">
+          <a href={links.linkedin} class="btn btn-primary">
+            Reach me on LinkedIn
+            <svg
+              class="btn-arrow"
+              width="15"
+              height="15"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 13 13 3M5.5 3H13v7.5"></path>
+            </svg>
+          </a>
+          <a href={links.github} class="btn btn-ghost">GitHub</a>
+        </div>
       </div>
+      <figure
+        class="reveal mx-auto w-full max-w-[240px] lg:col-span-3 lg:col-start-10 lg:max-w-none"
+        style="--reveal-i:2"
+      >
+        <div class="media-frame shadow-soft">
+          <Image
+            src={headshot}
+            alt="Portrait of Mateo Osorio Delhonte"
+            widths={[280, 420, 640]}
+            sizes="(min-width: 1024px) 20vw, 240px"
+          />
+        </div>
+      </figure>
     </div>
   </section>
 </BaseLayout>

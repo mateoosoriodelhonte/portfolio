@@ -15,10 +15,16 @@ import tracemarkLibrary from "~/assets/projects/tracemark/tracemark-library.png"
 import tracemarkSearch from "~/assets/projects/tracemark/tracemark-search.png";
 import tracemarkLocalAi from "~/assets/projects/tracemark/tracemark-local-ai.png";
 import gatehouseDashboard from "~/assets/projects/gatehouse/dashboard.png";
+import processpilotOverview from "~/assets/projects/processpilot/overview.png";
+import processpilotApplications from "~/assets/projects/processpilot/applications.png";
 import shoppinlystLists from "~/assets/projects/shoppinlyst/lists.png";
 import shoppinlystAddItem from "~/assets/projects/shoppinlyst/add-item.png";
 import shoppinlystNearby from "~/assets/projects/shoppinlyst/nearby.png";
 import shoppinlystPrices from "~/assets/projects/shoppinlyst/prices.png";
+import shoppinlystListsDark from "~/assets/projects/shoppinlyst/lists-dark.png";
+import shoppinlystRecipesDark from "~/assets/projects/shoppinlyst/recipes-dark.png";
+import shoppinlystPricesDark from "~/assets/projects/shoppinlyst/prices-dark.png";
+import shoppinlystAppStore from "~/assets/projects/shoppinlyst/appstore.png";
 
 export type Domain =
   "Full Stack" | "AI" | "Systems" | "Browser Extensions" | "Developer Tools" | "Mobile";
@@ -88,7 +94,10 @@ export const projects: Project[] = [
     stack: ["Rust", "Go", "SQLite", "SSE", "Playwright"],
     repo: links.repos.processpilot,
     facts: ["two-language pipeline", "read-only by design", "MIT"],
-    images: {},
+    images: {
+      overview: processpilotOverview,
+      applications: processpilotApplications,
+    },
   },
   {
     slug: "shoppinlyst",
@@ -105,6 +114,10 @@ export const projects: Project[] = [
       addItem: shoppinlystAddItem,
       nearby: shoppinlystNearby,
       prices: shoppinlystPrices,
+      listsDark: shoppinlystListsDark,
+      recipesDark: shoppinlystRecipesDark,
+      pricesDark: shoppinlystPricesDark,
+      appStore: shoppinlystAppStore,
     },
   },
   {

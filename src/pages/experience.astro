@@ -8,6 +8,10 @@ const pr = await sandploverPrState();
 
 const areas = [
   {
+    title: "AI product features",
+    text: "Building AI-driven capabilities into a client-facing product — and the systems thinking that keeps them trustworthy: what the model may touch, what stays deterministic, and how results are validated.",
+  },
+  {
     title: "Product engineering",
     text: "Client-facing features across the stack: React and Next.js frontends, API endpoints, and PostgreSQL-backed data systems — implemented end to end, from route behavior to the data underneath it.",
   },
@@ -54,7 +58,7 @@ const stack: [string, string[]][] = [
 
 <BaseLayout
   title="Experience"
-  description="Mateo Osorio Delhonte's experience: platform engineering at SolutionStream on the New Reward platform — client-facing product work, React/Next.js, APIs, PostgreSQL, QA validation, and production investigation."
+  description="Mateo Osorio Delhonte's experience: AI Engineer at SolutionStream — client-facing product work, AI features, React/Next.js, APIs, PostgreSQL, QA validation, and production investigation. Research assistant at Southern Utah University."
   ogImage="/og/experience.png"
 >
   <section class="container-page pt-20 pb-20 md:pt-28">
@@ -70,7 +74,7 @@ const stack: [string, string[]][] = [
       <div class="lg:col-span-4">
         <div class="reveal lg:sticky lg:top-24">
           <p class="font-display text-title text-ink">SolutionStream</p>
-          <p class="mt-1 text-sm text-ink-muted">Platform Engineer — New Reward platform</p>
+          <p class="mt-1 text-sm text-ink-muted">AI Engineer — client-facing product</p>
           <p class="mt-3 flex items-center gap-2">
             <span class="chip chip--go"
               ><span class="chip-dot" aria-hidden="true"></span>Current</span
@@ -84,9 +88,10 @@ const stack: [string, string[]][] = [
       </div>
       <div class="lg:col-span-8">
         <p class="reveal max-w-2xl text-lede text-ink-muted">
-          I work on a client-facing product platform: building features across frontend, APIs and
-          data, and owning the quality work that keeps a production system trustworthy — route
-          behavior, data coverage, error states, regression testing, and release validation.
+          I work on a client-facing product platform as an AI engineer: building AI-driven features
+          and the full-stack product around them, and owning the quality work that keeps a
+          production system trustworthy — route behavior, data coverage, error states, regression
+          testing, and release validation.
         </p>
         <div class="mt-12 grid gap-x-10 gap-y-0 md:grid-cols-2">
           {
@@ -99,6 +104,17 @@ const stack: [string, string[]][] = [
           }
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- second role -->
+  <section class="container-page pb-20">
+    <div class="hairline-t flex flex-wrap items-baseline justify-between gap-4 pt-8">
+      <div>
+        <p class="reveal font-display text-title text-ink">Southern Utah University</p>
+        <p class="reveal mt-1 text-sm text-ink-muted">Research Assistant</p>
+      </div>
+      <span class="chip chip--go"><span class="chip-dot" aria-hidden="true"></span>Current</span>
     </div>
   </section>
 
