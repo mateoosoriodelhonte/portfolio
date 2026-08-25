@@ -1,0 +1,117 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { projects, project, type Project } from "~/lib/projects";
+import { withBase } from "~/lib/site";
+
+interface Props {
+  slug: string;
+  /** Longer meta description for this case study. */
+  description: string;
+  ogImage?: string | undefined;
+}
+
+const { slug, description, ogImage } = Astro.props;
+const p: Project = project(slug);
+
+const index = projects.findIndex((x) => x.slug === slug);
+const prev = projects[(index - 1 + projects.length) % projects.length]!;
+const next = projects[(index + 1) % projects.length]!;
+---
+
+<BaseLayout title={p.name} description={description} ogImage={ogImage}>
+  <article>
+    <!-- case hero -->
+    <header class="container-page pt-16 pb-14 md:pt-24 md:pb-20">
+      <nav aria-label="Breadcrumb">
+        <a
+          href={withBase("/work/")}
+          class="group inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.14em] text-ink-faint uppercase transition-colors hover:text-ink"
+        >
+          <svg
+            class="transition-transform duration-300 group-hover:-translate-x-0.5"
+            width="12"
+            height="12"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M14 8H3M7 3.5 2.5 8 7 12.5"></path>
+          </svg>
+          Work
+        </a>
+      </nav>
+
+      <div class="mt-10 grid gap-x-12 gap-y-8 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <p class="eyebrow text-accent">{p.domains.join(" · ")}</p>
+          <h1 class="mt-4 font-display text-display-xl text-ink">{p.name}</h1>
+          <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
+        </div>
+        <div class="flex flex-col gap-5 self-end lg:col-span-4 lg:items-end">
+          <ul
+            class="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.7rem] tracking-[0.08em] text-ink-faint uppercase lg:justify-end"
+          >
+            {p.facts.map((fact) => <li>{fact}</li>)}
+          </ul>
+          <div class="flex flex-wrap gap-3">
+            {
+              p.repo && (
+                <a href={p.repo} class="btn btn-ghost px-4! py-2.5! text-sm">
+                  Repository
+                </a>
+              )
+            }
+            {
+              p.demo && (
+                <a href={p.demo} class="btn btn-primary px-4! py-2.5! text-sm">
+                  Live demo
+                </a>
+              )
+            }
+            {
+              p.store && (
+                <a href={p.store} class="btn btn-primary px-4! py-2.5! text-sm">
+                  App Store
+                </a>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <slot />
+
+    <!-- prev / next -->
+    <nav aria-label="More projects" class="hairline-t mt-28">
+      <div class="container-page grid sm:grid-cols-2">
+        <a
+          href={withBase(`/work/${prev.slug}/`)}
+          class="group hairline-b py-10 pr-6 transition-colors sm:border-b-0"
+        >
+          <p class="eyebrow">Previous</p>
+          <p
+            class="mt-2 font-display text-title text-ink transition-colors group-hover:text-accent"
+          >
+            {prev.name}
+          </p>
+        </a>
+        <a
+          href={withBase(`/work/${next.slug}/`)}
+          class="group py-10 text-right transition-colors sm:border-l sm:border-line sm:pl-6"
+        >
+          <p class="eyebrow">Next</p>
+          <p
+            class="mt-2 font-display text-title text-ink transition-colors group-hover:text-accent"
+          >
+            {next.name}
+          </p>
+        </a>
+      </div>
+    </nav>
+  </article>
+</BaseLayout>

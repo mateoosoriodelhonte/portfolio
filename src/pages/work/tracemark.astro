@@ -1,32 +1,163 @@
 ---
-import BaseLayout from "~/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
 
 const p = project("tracemark");
 ---
 
-<BaseLayout title={p.name} description={p.tagline}>
-  <section class="container-page pt-20 pb-28 md:pt-28">
-    <p class="eyebrow">{p.domains.join(" · ")}</p>
-    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
-    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
-    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
-    <p class="mt-10 text-sm text-ink-muted">
-      Full case study in progress.
-      {
-        p.repo && (
-          <a href={p.repo} class="evidence-link">
-            Repository
-          </a>
-        )
-      }
-      {
-        p.store && (
-          <a href={p.store} class="evidence-link">
-            App Store
-          </a>
-        )
-      }
+<CaseStudyLayout
+  slug="tracemark"
+  description="Case study: TraceMark, a local-first Chrome and Firefox extension for saving quotations with their source, searching a research library, and re-finding exact passages — built with WXT, Svelte, and IndexedDB."
+>
+  <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.library!}
+          alt="The TraceMark research library in a browser side panel: saved quotations with sources, collections, tags, and local-first controls"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        The research library — everything stays in the browser profile
+      </figcaption>
+    </figure>
+  </div>
+
+  <CaseSection number="01" label="The problem" title="A quote without its source is a liability.">
+    <p>
+      Research collected across dozens of tabs ends up as screenshots, pasted fragments, and
+      bookmarks that no longer say <em>why</em> they mattered. When it’s time to cite, the source is gone.
     </p>
-  </section>
-</BaseLayout>
+    <p>
+      TraceMark saves the useful part of the web <strong>with the source attached</strong>: selected
+      text is captured together with the page title, URL, and nearby context, organized into
+      collections with tags and notes, and searchable across everything — text, hosts, tags, notes.
+    </p>
+  </CaseSection>
+
+  <CaseSection number="02" label="The honest anchor" title="Mark on page refuses to guess.">
+    <p>
+      Any saved quotation can be re-anchored on its original page — a runtime annotation, not an
+      edit to the website. TraceMark marks only an <strong>unambiguous exact match</strong>: if the
+      quote is missing, duplicated without enough context, or the page has changed, it says so
+      instead of highlighting something that merely looks right.
+    </p>
+    <p>
+      That refusal is the same principle as everywhere else in my work — a wrong answer presented
+      confidently is worse than an honest “can’t verify this.”
+    </p>
+  </CaseSection>
+
+  <CaseSection number="03" label="Permissions as architecture" width="wide">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="case-prose">
+        <p>
+          Extensions are trusted code in a hostile place, so TraceMark treats browser permissions as
+          an architectural boundary, not an installation formality:
+        </p>
+        <ul>
+          <li>
+            <strong>No content script on every site.</strong> Capture runs through browser gestures —
+            toolbar click, context menu, <kbd>Alt+Shift+S</kbd> — which grant access to the active page
+            for that invocation only.
+          </li>
+          <li>
+            <strong>Local AI is opt-in, twice.</strong> On Firefox, enabling Ollama requires an explicit
+            data-consent step and then a second click to grant the loopback origin. Grants are rechecked
+            before every request and fail closed if revoked.
+          </li>
+          <li>
+            <strong>Cleanup is verified, not assumed.</strong> If permission removal fails, TraceMark
+            blocks re-enabling behind an explicit “retry permission removal” state rather than assuming
+            the grant is gone.
+          </li>
+        </ul>
+      </div>
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.localAi!}
+            alt="TraceMark's Local AI settings showing the explicit enable flow for a loopback Ollama endpoint"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">
+          Optional local AI — summaries and tags via Ollama, never a cloud call
+        </figcaption>
+      </figure>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="04" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>Local-first, with user-owned backups</dt>
+        <dd>
+          No account, no telemetry, no backend. Research lives in IndexedDB inside the browser
+          profile; complete JSON backups and readable Markdown exports are downloads the user owns.
+          Imports are validated before merging.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>WXT + Svelte across two browsers</dt>
+        <dd>
+          One codebase builds both MV3 targets. Chrome uses the side panel, Firefox the sidebar, and
+          the packaging step produces reviewed release ZIPs whose contents are covered by contract
+          tests — <code>pnpm check</code> rebuilds the exact archives before validating them.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Deterministic store screenshots</dt>
+        <dd>
+          Store screenshots are regenerated by a script and validated for filename, dimensions, and
+          size — the images in the repository are reproducible artifacts, not stale by-hand
+          captures.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Status reported precisely</dt>
+        <dd>
+          v1.0.0 is a validated GitHub release for both browsers. The README says plainly what that
+          means: the packages are reviewed and checksummed, browser-store publication has not
+          happened, and the Firefox ZIP is unsigned. No implied store presence.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="05" label="Search, quickly" width="wide">
+    <figure class="reveal">
+      <div class="media-frame shadow-soft">
+        <Image
+          src={p.images.search!}
+          alt="TraceMark search filtering saved research across quotation text, titles, hosts, notes, tags and collections"
+          widths={[640, 1080, 1600]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+        />
+      </div>
+      <figcaption class="case-caption">
+        One search across quotations, titles, hosts, notes, tags, and collections
+      </figcaption>
+    </figure>
+  </CaseSection>
+
+  <CaseSection number="06" label="Stack and links">
+    <p>
+      WXT · Svelte · TypeScript · IndexedDB · WebExtensions APIs (side panel, context menus,
+      commands, optional permissions) · Vitest · Playwright-driven packaged-browser checks · GitHub
+      Actions.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> ·
+      <a href={`${p.repo}/releases/tag/v1.0.0`}>v1.0.0 release</a> ·
+      <a href={`${p.repo}/blob/main/docs/PERMISSIONS.md`}>Permission rationale</a> ·
+      <a href={`${p.repo}/blob/main/PRIVACY.md`}>Privacy policy</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>

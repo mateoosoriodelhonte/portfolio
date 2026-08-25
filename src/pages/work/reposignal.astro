@@ -1,32 +1,393 @@
 ---
-import BaseLayout from "~/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
 
 const p = project("reposignal");
+
+const stages = [
+  {
+    name: "GitHub REST API",
+    detail: "auth · retry · timeouts · request budget",
+    text: "A hand-written client collects public evidence — commits, pull requests, issues, workflow runs, community files — under a hard per-analysis request budget. Rate limits fail fast with a reset time instead of retrying into the wall.",
+  },
+  {
+    name: "Normalization",
+    detail: "GitHub payloads → domain types",
+    text: "GitHub response shapes never escape this layer. Nothing downstream references a GitHub field name, so an API change is contained to one directory — and the scoring engine can be tested with plain object literals instead of recorded HTTP fixtures.",
+  },
+  {
+    name: "RepositorySnapshot",
+    detail: "the only input scoring ever sees",
+    text: "Everything observable about the repository lands in one immutable snapshot. If a metric could not be observed, it is null here — not zero, not a default. That distinction survives all the way to the screen.",
+  },
+  {
+    name: "Scoring engine",
+    detail: "pure functions per category",
+    text: "Seven categories score the snapshot with documented weights and thresholds. A category without enough data scores null and is excluded, its weight redistributed. A test asserts the invariant directly: adding a null category can never lower the overall score.",
+  },
+  {
+    name: "Explainable result",
+    detail: "versioned · serializable · cacheable",
+    text: "The UI calculates nothing. Every number on screen expands into the metrics examined, the raw values, the weights applied, and links back to the evidence on GitHub.",
+  },
+];
 ---
 
-<BaseLayout title={p.name} description={p.tagline}>
-  <section class="container-page pt-20 pb-28 md:pt-28">
-    <p class="eyebrow">{p.domains.join(" · ")}</p>
-    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
-    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
-    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
-    <p class="mt-10 text-sm text-ink-muted">
-      Full case study in progress.
-      {
-        p.repo && (
-          <a href={p.repo} class="evidence-link">
-            Repository
-          </a>
-        )
-      }
-      {
-        p.store && (
-          <a href={p.store} class="evidence-link">
-            App Store
-          </a>
-        )
-      }
+<CaseStudyLayout
+  slug="reposignal"
+  description="Case study: RepoSignal, an evidence-backed engineering-health analyzer for GitHub repositories. Deterministic scoring, honest nulls, Next.js, TypeScript, PostgreSQL — with 477 tests."
+>
+  <!-- lead screenshot -->
+  <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.analysis!}
+          alt="RepoSignal analyzing react/react: an overall score of 86/100, seven category scores, and a banner explaining that branch protection could not be retrieved"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        react/react scored 86/100 — with branch protection reported as unverifiable, not failed
+      </figcaption>
+    </figure>
+  </div>
+
+  <CaseSection number="01" label="The problem" title="Star counts measure popularity, not health.">
+    <p>
+      Judging an unfamiliar repository usually means skimming the README, glancing at the commit
+      graph, and guessing. Most “repo score” tools replace the guess with a number you cannot
+      interrogate — which is worse, because it looks like knowledge.
     </p>
+    <p>
+      RepoSignal is built on the opposite premise: <strong
+        >a score you cannot audit is not worth showing.</strong
+      > Every category expands to reveal the metrics examined, their raw values, the weights applied,
+      the thresholds used, and links to the evidence on GitHub.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    number="02"
+    label="The rule that shaped the architecture"
+    title="Missing data is not evidence of poor health."
+  >
+    <p>
+      A repository whose commit statistics GitHub has not computed is not unhealthy — it is <em
+        >unmeasured</em
+      >. So an unobservable metric is <code>null</code>, a category with too little data scores
+      <code>null</code> rather than zero, and a null category is excluded from the overall score with
+      its weight redistributed.
+    </p>
+    <p>
+      Silently turning missing data into a zero is the easiest way to make a health score dishonest.
+      Avoiding it drove most of the type design — <code>score: number | null</code> appears throughout,
+      and the UI renders “insufficient data” rather than a fabricated number. The invariant is enforced
+      by a test: <strong>adding a null category can never lower the overall score.</strong>
+    </p>
+  </CaseSection>
+
+  <!-- sticky pipeline storytelling -->
+  <section class="container-page pt-16 md:pt-24" id="pipeline">
+    <div class="reveal hairline-t pt-4">
+      <p class="eyebrow">
+        <span class="text-accent">03</span><span class="mx-1.5" aria-hidden="true">—</span>How an
+        analysis happens
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-x-16 lg:grid-cols-2">
+      <!-- scrolling steps -->
+      <div class="order-2 lg:order-1">
+        {
+          stages.map((stage, i) => (
+            <div
+              class="pipeline-step flex flex-col justify-center py-14 lg:min-h-[52vh] lg:py-8"
+              data-step={i}
+            >
+              <p class="font-mono text-sm text-accent">0{i + 1}</p>
+              <h3 class="mt-3 font-display text-title text-ink">{stage.name}</h3>
+              <p class="mt-1 font-mono text-[0.72rem] tracking-[0.08em] text-ink-faint uppercase">
+                {stage.detail}
+              </p>
+              <p class="mt-4 max-w-md leading-relaxed text-ink-muted">{stage.text}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- sticky diagram -->
+      <div class="order-1 lg:order-2">
+        <div class="lg:sticky lg:top-24 lg:flex lg:h-[calc(100vh-8rem)] lg:items-center">
+          <ol class="pipeline-diagram w-full" aria-hidden="true">
+            {
+              stages.map((stage, i) => (
+                <li class="pipeline-node" data-node={i}>
+                  <span class="pipeline-dot" />
+                  <span class="pipeline-label">
+                    <span class="block font-medium">{stage.name}</span>
+                    <span class="mt-0.5 block font-mono text-[0.65rem] tracking-[0.06em] text-ink-faint uppercase">
+                      {stage.detail}
+                    </span>
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </div>
   </section>
-</BaseLayout>
+
+  <CaseSection number="04" label="What it measures" width="wide">
+    <div
+      class="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        [
+          ["Repository activity", "Commit cadence, last push, release recency and regularity"],
+          ["Pull request health", "Open PR ages, merge velocity, long-lived open PRs"],
+          ["Issue health", "Backlog age, stale issues, open/close rates"],
+          ["CI health", "Workflows present, recent run outcomes, repeated failures"],
+          ["Documentation", "README, CONTRIBUTING, LICENSE, templates, docs directory"],
+          ["Repository hygiene", "Lockfiles, CODEOWNERS, dependency automation, release tags"],
+          ["Security hygiene", "SECURITY.md, dependency automation, scanning in CI"],
+        ].map(([name, detail]) => (
+          <div class="bg-paper p-6">
+            <h3 class="text-sm font-medium text-ink">{name}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{detail}</p>
+          </div>
+        ))
+      }
+      <div class="bg-paper p-6 sm:col-span-2 lg:col-span-2">
+        <h3 class="text-sm font-medium text-accent">
+          Deliberately “hygiene”, not “security score”
+        </h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+          RepoSignal observes practices; it does not scan for vulnerabilities and will never claim a
+          repository is secure. A test collects every user-facing string in that module and asserts
+          none of them says so.
+        </p>
+      </div>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="05" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>Deterministic scoring instead of an LLM</dt>
+        <dd>
+          The same snapshot always yields the same result, every threshold can be unit tested, and a
+          user who disagrees can be shown the exact rule that produced the number. An LLM-generated
+          score is none of those things — AI stays a possible presentation layer, never the
+          calculator.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>A hand-written GitHub client instead of Octokit</dt>
+        <dd>
+          Three policies shaped the client’s public signatures: a hard per-analysis request budget,
+          sample truncation surfaced to the caller (<code
+            >paginate returns {"{ items, truncated }"}</code
+          >), and rate-limit handling that fails fast with a reset time. Expressing those on top of
+          a general-purpose client meant fighting it.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Repository identity is the numeric ID</dt>
+        <dd>
+          Repositories get renamed and transferred — while building this, <code>facebook/react</code
+          > became <code>react/react</code>. GitHub’s numeric id is the stable identity, so a rename
+          resolves cleanly instead of forking history into two records.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>A strict CSP, paid for honestly</dt>
+        <dd>
+          Next.js streams Suspense boundaries through inline scripts, which a strict <code
+            >script-src</code
+          > blocks. RepoSignal takes a per-request nonce and gives up prerendering, since nonces are injected
+          at render time. A real trade, recorded as one rather than presented as a free win.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>No charting library</dt>
+        <dd>
+          The charts are static distributions. Server-rendered SVG ships zero client JavaScript and
+          makes the accessible text alternative part of the markup rather than a retrofit.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Private repositories via a GitHub App, not OAuth</dt>
+        <dd>
+          A classic OAuth app would demand the <code>repo</code> scope — read <em>and write</em> — on
+          everything. A GitHub App grants read-only access to explicitly selected repositories. Tokens
+          are minted per use, expire in an hour, and never touch the database or a log.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="06" label="Testing" title="No test contacts the live GitHub API.">
+    <p>
+      <strong>477 unit, integration and component tests plus 22 Playwright specs</strong> run against
+      MSW-mocked responses and bundled fixture snapshots — an unhandled request fails the test rather
+      than escaping. CI is therefore immune to rate limits and outages.
+    </p>
+    <ul>
+      <li><strong>Unit</strong> — every threshold and null path, in isolation</li>
+      <li><strong>Integration</strong> — the layers compose, network mocked with MSW</li>
+      <li><strong>Component</strong> — every UI state renders correctly</li>
+      <li><strong>E2E</strong> — the journey works in a browser, against a real build</li>
+    </ul>
+  </CaseSection>
+
+  <CaseSection number="07" label="The methodology, on screen" width="wide">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.methodology!}
+            alt="RepoSignal's expanded methodology for Repository Activity, listing each scoring component with its rule, score, weight, and observation"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">
+          Every category expands to its rules, weights, and observations
+        </figcaption>
+      </figure>
+      <figure class="reveal" style="--reveal-i:1">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.distributions!}
+            alt="Distribution charts in RepoSignal rendered as server-side SVG with accessible text alternatives"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">
+          Distributions as server-rendered SVG — zero client-side charting code
+        </figcaption>
+      </figure>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="08" label="Stack and links">
+    <p>
+      Next.js 16 (App Router) · React 19 · TypeScript strict with <code
+        >noUncheckedIndexedAccess</code
+      > and <code>exactOptionalPropertyTypes</code> · Tailwind CSS 4 · PostgreSQL + Prisma · Zod · Vitest
+      · React Testing Library · Playwright · MSW · GitHub Actions.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> · <a href={p.demo}>Live demo</a> ·
+      <a href={`${p.repo}/blob/main/docs/SCORING.md`}>Scoring methodology</a> ·
+      <a href={`${p.repo}/blob/main/ARCHITECTURE.md`}>Architecture notes</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>
+
+<style>
+  /* pipeline diagram */
+  .pipeline-diagram {
+    position: relative;
+    padding-left: 0.25rem;
+  }
+
+  .pipeline-node {
+    position: relative;
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.15rem 0;
+    align-items: flex-start;
+  }
+
+  .pipeline-node:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0.56rem;
+    top: 2.6rem;
+    bottom: -0.35rem;
+    width: 1px;
+    background: var(--line-strong);
+  }
+
+  .pipeline-dot {
+    flex: none;
+    margin-top: 0.3rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    transition:
+      background-color 0.4s var(--ease-out-quart),
+      border-color 0.4s var(--ease-out-quart),
+      box-shadow 0.4s var(--ease-out-quart);
+  }
+
+  .pipeline-label {
+    font-size: 0.92rem;
+    color: var(--ink-muted);
+    transition:
+      color 0.4s var(--ease-out-quart),
+      opacity 0.4s var(--ease-out-quart);
+    opacity: 0.55;
+  }
+
+  .pipeline-node.is-active .pipeline-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-wash);
+  }
+
+  .pipeline-node.is-active .pipeline-label {
+    color: var(--ink);
+    opacity: 1;
+  }
+
+  /* below lg the diagram is a static legend */
+  @media (max-width: 1023px) {
+    .pipeline-label {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  function initPipeline() {
+    const steps = document.querySelectorAll<HTMLElement>(".pipeline-step");
+    if (!steps.length) return;
+
+    const nodes = document.querySelectorAll<HTMLElement>(".pipeline-node");
+    const activate = (index: number) => {
+      nodes.forEach((node, i) => node.classList.toggle("is-active", i === index));
+    };
+
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || innerWidth < 1024) {
+      nodes.forEach((node) => node.classList.add("is-active"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            activate(Number((entry.target as HTMLElement).dataset.step));
+          }
+        }
+      },
+      { rootMargin: "-40% 0px -40% 0px" },
+    );
+    steps.forEach((step) => observer.observe(step));
+    activate(0);
+  }
+
+  initPipeline();
+  document.addEventListener("astro:page-load", initPipeline);
+</script>

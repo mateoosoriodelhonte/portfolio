@@ -1,32 +1,260 @@
 ---
-import BaseLayout from "~/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
 
 const p = project("studyforge");
+
+const journey = [
+  {
+    step: "Notes",
+    text: "Paste text or upload .txt, .md and PDFs. Text is normalised — hyphenation rejoined, hard wraps unwrapped, page numbers removed — then split at semantic boundaries.",
+  },
+  {
+    step: "Understanding",
+    text: "Concepts are extracted from evidence actually present in the text: definition sentences, glossary lines, headings, repeated terms — each scored by how much that evidence proves.",
+  },
+  {
+    step: "Review",
+    text: "Deterministic flashcards and quizzes, scheduled by FSRS-6. The queue prioritises overdue reviews, then due ones, then the concepts you keep getting wrong.",
+  },
+  {
+    step: "Learning",
+    text: "Accuracy, due counts, and weak-concept analysis computed from what you actually did — with every percentage showing the sample it came from.",
+  },
+];
+
+const capabilities = [
+  ["Text extraction from PDFs and text files", "works"],
+  ["Concept extraction", "works, deterministic"],
+  ["Flashcard and quiz generation", "works, deterministic"],
+  ["FSRS-6 spaced repetition", "never uses AI, by design"],
+  ["Weak-concept analysis", "never uses AI, by design"],
+  ["Full-text search and “Ask my notes”", "works"],
+  ["AI-written explanations", "requires a provider"],
+] as const;
 ---
 
-<BaseLayout title={p.name} description={p.tagline}>
-  <section class="container-page pt-20 pb-28 md:pt-28">
-    <p class="eyebrow">{p.domains.join(" · ")}</p>
-    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
-    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
-    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
-    <p class="mt-10 text-sm text-ink-muted">
-      Full case study in progress.
-      {
-        p.repo && (
-          <a href={p.repo} class="evidence-link">
-            Repository
-          </a>
-        )
-      }
-      {
-        p.store && (
-          <a href={p.store} class="evidence-link">
-            App Store
-          </a>
-        )
-      }
+<CaseStudyLayout
+  slug="studyforge"
+  description="Case study: StudyForge, a local-first study system in Python — FastAPI, HTMX, SQLite, and an FSRS-6 spaced-repetition engine verified against the reference implementation. Fully functional with zero AI."
+>
+  <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.study!}
+          alt="A StudyForge study session: a flashcard with four rating buttons, each showing the real interval that answer would schedule"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        The rating buttons show the real interval each answer would produce
+      </figcaption>
+    </figure>
+  </div>
+
+  <CaseSection number="01" label="The problem" title="Most study tools ask you to trust them.">
+    <p>
+      Flashcard apps make you write the cards. “AI study tools” make you trust a model you cannot
+      inspect — and stop working when the API key runs out.
     </p>
+    <p>
+      StudyForge takes the material you already have, does the tedious part deterministically, and
+      is honest about the difference between <em>“the document says X is defined as Y”</em> and
+      <em>“I understand X.”</em> It runs on your machine, stores everything in one SQLite file, and is
+      <strong>fully functional with no AI configured at all.</strong>
+    </p>
+  </CaseSection>
+
+  <!-- the journey -->
+  <section class="container-page pt-16 md:pt-24">
+    <div class="reveal hairline-t pt-4">
+      <p class="eyebrow">
+        <span class="text-accent">02</span><span class="mx-1.5" aria-hidden="true">—</span>From
+        notes to durable memory
+      </p>
+    </div>
+    <div class="mt-12 grid gap-y-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-x-0">
+      {
+        journey.map((item, i) => (
+          <div
+            class="journey-cell reveal lg:px-7 lg:first:pl-0 lg:last:pr-0"
+            style={`--reveal-i:${i}`}
+          >
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-sm text-accent">0{i + 1}</span>
+              <span class="journey-arrow hidden flex-1 lg:block" aria-hidden="true" />
+            </div>
+            <h3 class="mt-4 font-display text-title text-ink">{item.step}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-ink-muted">{item.text}</p>
+          </div>
+        ))
+      }
+    </div>
   </section>
-</BaseLayout>
+
+  <CaseSection number="03" label="Zero-cost, and useful with no AI" width="wide">
+    <div class="max-w-[46rem]">
+      <p class="case-prose">
+        <code>AI_PROVIDER=none</code> is the default. Two capabilities are marked <em
+          >never uses AI, by design</em
+        > rather than “not implemented”: scheduling and weak-concept classification are arithmetic, and
+        handing them to a probabilistic text generator would make them unreproducible and untestable —
+        so a language model cannot reach either one.
+      </p>
+    </div>
+    <div class="mt-10 max-w-3xl">
+      {
+        capabilities.map(([capability, status]) => (
+          <div class="reveal hairline-t flex items-baseline justify-between gap-6 py-3.5">
+            <span class="text-sm text-ink">{capability}</span>
+            <span
+              class:list={[
+                "text-right font-mono text-[0.68rem] tracking-[0.08em] uppercase",
+                status.includes("by design")
+                  ? "text-accent"
+                  : status.includes("provider")
+                    ? "text-caution"
+                    : "text-ink-faint",
+              ]}
+            >
+              {status}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+    <p class="case-prose mt-8 max-w-[46rem]">
+      If you want AI, <a href="https://ollama.com">Ollama</a> runs models locally — nothing leaves your
+      machine. StudyForge never downloads a model for you; if the configured one is missing it says so
+      and carries on with the deterministic path.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    number="04"
+    label="The study engine"
+    title="A schedule you can reproduce is a schedule you can trust."
+  >
+    <p>
+      The FSRS-6 implementation is ~150 lines of closed-form arithmetic in the hottest path of the
+      product. Owning it means the rules are reviewable and covered by the project’s own tests: the
+      forgetting-curve identities, the four-rating ordering, the spacing effect, and difficulty
+      clamping under 50 consecutive failures.
+    </p>
+    <p>
+      Before being frozen, the implementation was <strong
+        >verified against the reference FSRS implementation across 4,096 review transitions</strong
+      > — and the verification script ships in the repository, so anyone can rerun it. The engine reads
+      no clock and holds no state; the caller supplies the time.
+    </p>
+  </CaseSection>
+
+  <CaseSection number="05" label="Honest by construction" width="wide">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="case-prose">
+        <p>The interface refuses to imply knowledge it does not have:</p>
+        <ul>
+          <li>a concept answered twice is <strong>“not enough data”</strong>, not “mastered”</li>
+          <li>every percentage shows its sample — <em>88%, from 8 answers</em></li>
+          <li>a rate with no data renders as <strong>—</strong>, never as 0%</li>
+          <li>every generated card links back to the exact passage it came from</li>
+          <li>every status label has a written definition, shown next to it in the UI</li>
+        </ul>
+      </div>
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.progress!}
+            alt="StudyForge progress view showing review accuracy with sample sizes and a weak-concept analysis"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">Every rate carries the sample it came from</figcaption>
+      </figure>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="06" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>SQLite, deliberately</dt>
+        <dd>
+          Local-first means no server and no connection string, and FTS5 gives full-text search with
+          nothing extra installed. Foreign keys and WAL are enabled explicitly at connect time,
+          because SQLite ships with FK enforcement off — without that, the declared
+          <code>ondelete</code> rules would be inert.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>HTMX rather than React</dt>
+        <dd>
+          Almost every interaction is server-driven: rate a card and the server decides what comes
+          next. A SPA would add a build step, a second data model and a hydration boundary to solve
+          a problem this application does not have.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>No vector database</dt>
+        <dd>
+          At one person’s scale, FTS5 is the right tool. Adding embeddings and a vector store to
+          search a few thousand paragraphs would be architecture for its own sake.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>The domain layer imports nothing</dt>
+        <dd>
+          The FSRS engine, chunking, extraction, generation, and queue building import nothing from
+          SQLAlchemy, FastAPI or any AI provider. That is what makes the algorithms exhaustively
+          testable — and what guarantees no model can reach the scheduler.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="07" label="Testing" title="695 tests, including the unfriendly ones.">
+    <p>
+      Coverage includes golden vectors for the scheduler, determinism assertions (chunking,
+      extraction, generation and queue building produce identical output across repeated runs), and
+      a security suite: path traversal, content-type spoofing, XSS through every user-controlled
+      field, FTS and SQL injection, and error disclosure. Every AI failure mode is tested against a
+      mock transport — CI never contacts a live model.
+    </p>
+  </CaseSection>
+
+  <CaseSection number="08" label="Stack and links">
+    <p>
+      Python 3.12 · FastAPI · Jinja2 + HTMX · SQLAlchemy 2 (typed) · Alembic · SQLite + FTS5 ·
+      Pydantic 2 · pypdf · uv · Ruff · mypy <code>--strict</code> · pytest · Playwright · GitHub Actions.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> ·
+      <a href={`${p.repo}/blob/main/docs/STUDY_ENGINE.md`}>Study-engine verification</a> ·
+      <a href={`${p.repo}/blob/main/docs/PRIVACY.md`}>Privacy model</a> ·
+      <a href={`${p.repo}/blob/main/ARCHITECTURE.md`}>Architecture</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>
+
+<style>
+  .journey-arrow {
+    height: 1px;
+    background: linear-gradient(to right, var(--line-strong) 60%, transparent 0) 0 0 / 6px 1px
+      repeat-x;
+  }
+
+  .journey-cell:last-child .journey-arrow {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .journey-cell + .journey-cell {
+      border-left: 1px solid var(--line);
+    }
+  }
+</style>

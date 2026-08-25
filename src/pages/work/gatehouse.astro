@@ -1,32 +1,200 @@
 ---
-import BaseLayout from "~/layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
 import { project } from "~/lib/projects";
 
 const p = project("gatehouse");
+
+const verdicts = [
+  ["GO", "every configured requirement is satisfied by observed evidence", "go"],
+  ["REVIEW", "mergeable, but something deserves human judgment", "neutral"],
+  ["BLOCKED", "a hard requirement is failing", "blocked"],
+  ["DRAFT", "the author says it is not ready", "neutral"],
+  ["UNKNOWN", "evidence is missing — Gatehouse does not guess", "neutral"],
+] as const;
 ---
 
-<BaseLayout title={p.name} description={p.tagline}>
-  <section class="container-page pt-20 pb-28 md:pt-28">
-    <p class="eyebrow">{p.domains.join(" · ")}</p>
-    <h1 class="mt-6 font-display text-display-xl text-ink">{p.name}</h1>
-    <p class="mt-4 max-w-2xl font-display text-title text-ink-muted italic">{p.tagline}</p>
-    <p class="mt-8 max-w-xl text-ink-muted">{p.summary}</p>
-    <p class="mt-10 text-sm text-ink-muted">
-      Full case study in progress.
+<CaseStudyLayout
+  slug="gatehouse"
+  description="Case study: Gatehouse, a local read-only GitHub PR readiness dashboard in C# and .NET 10. Branch state, checks, reviews and policy become one deterministic verdict — and missing evidence stays UNKNOWN."
+>
+  <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.dashboard!}
+          alt="The Gatehouse dashboard listing pull requests with deterministic readiness verdicts and the evidence behind each one"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        One dashboard, one deterministic verdict per pull request
+      </figcaption>
+    </figure>
+  </div>
+
+  <CaseSection
+    number="01"
+    label="The problem"
+    title="“Can this merge?” lives in five different tabs."
+  >
+    <p>
+      Answering it means checking branch state, CI checks, review approvals, unresolved threads,
+      linked issues, and repository policy — each in its own corner of GitHub. Gatehouse collects
+      those facts locally and reduces them, with documented rules, to a single answer.
+    </p>
+    <p>
+      The same rules drive the web UI, the CLI, reports, and JSON output — so the dashboard, the
+      terminal, and your scripts can never disagree about what ready means.
+    </p>
+  </CaseSection>
+
+  <!-- verdicts -->
+  <section class="container-page pt-16 md:pt-24">
+    <div class="reveal hairline-t pt-4">
+      <p class="eyebrow">
+        <span class="text-accent">02</span><span class="mx-1.5" aria-hidden="true">—</span>Five
+        verdicts, zero vibes
+      </p>
+    </div>
+    <div class="mt-10 max-w-3xl">
       {
-        p.repo && (
-          <a href={p.repo} class="evidence-link">
-            Repository
-          </a>
-        )
+        verdicts.map(([verdict, meaning, kind], i) => (
+          <div
+            class="reveal hairline-t flex flex-col gap-2 py-5 sm:flex-row sm:items-baseline sm:gap-8"
+            style={`--reveal-i:${i}`}
+          >
+            <span
+              class:list={[
+                "verdict-chip",
+                kind === "go" && "verdict-chip--go",
+                kind === "blocked" && "verdict-chip--blocked",
+              ]}
+            >
+              {verdict}
+            </span>
+            <span class="text-sm leading-relaxed text-ink-muted">{meaning}</span>
+          </div>
+        ))
       }
-      {
-        p.store && (
-          <a href={p.store} class="evidence-link">
-            App Store
-          </a>
-        )
-      }
+    </div>
+    <p class="case-prose mt-8 max-w-[46rem]">
+      <strong>UNKNOWN is the load-bearing verdict.</strong> When the GitHub API cannot supply a fact —
+      a permission is missing, a check has not reported — Gatehouse says so instead of optimistically
+      rounding up. A decision aid that guesses is worse than none.
     </p>
   </section>
-</BaseLayout>
+
+  <CaseSection number="03" label="Policy as configuration" width="wide">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="case-prose">
+        <p>
+          Defaults are safe, and a repository can declare its own rules in a
+          <code>.gatehouse.yml</code> next to where you run the CLI. Require linked issues or don’t; block
+          on requested changes or treat them as advisory; demand a current branch or accept a stale one.
+        </p>
+        <p>
+          Gatehouse stays a <strong>decision aid</strong> — GitHub branch protection remains the authority,
+          and Gatehouse never merges, comments, pushes, or runs Git. Its GitHub access is read-only, and
+          the local SQLite cache keeps your data on your machine.
+        </p>
+      </div>
+      <div class="reveal">
+        <div class="media-frame shadow-soft">
+          <div class="media-inner overflow-hidden bg-sunken">
+            <div class="window-chrome"><span></span><span></span><span></span></div>
+            <pre
+              class="overflow-x-auto px-6 py-6 font-mono text-[0.78rem] leading-relaxed text-ink-muted"><code>readiness:
+  require_linked_issue: false
+  require_all_checks: true
+  require_approval: true
+  require_no_unresolved_threads: true
+  require_mergeable: true
+  require_current_branch: false
+  block_on_changes_requested: true</code></pre>
+          </div>
+        </div>
+        <p class="case-caption">.gatehouse.yml — the whole policy surface</p>
+      </div>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="04" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>One rules engine, four surfaces</dt>
+        <dd>
+          The readiness model is a single deterministic core consumed by the Blazor dashboard, the
+          CLI, report output, and JSON. Testing the rules once tests every surface.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Demo mode with synthetic data</dt>
+        <dd>
+          <code>gatehouse status --demo</code> exercises the full product with synthetic data and makes
+          no GitHub or network request at all — you can evaluate it before trusting it with a token.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Shipped as a dotnet tool</dt>
+        <dd>
+          Distribution is a NuGet package installed with <code>dotnet tool install</code>. The
+          release gate installs and runs the packed tool on hosted macOS and Windows, while Linux
+          runs the full build, tests, browser flow, and server smoke test.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Tokens stay out of the repository</dt>
+        <dd>
+          Private repositories need a read-only token supplied by environment variable. The docs are
+          explicit: never put a token in a command, config file, or repository.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="05" label="Stack and links">
+    <p>
+      C# · .NET 10 · ASP.NET Core · Blazor · SQLite · xUnit · Playwright browser flow · GitHub
+      Actions — with the SDK pinned in <code>global.json</code> and restore run in locked mode.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> ·
+      <a href={`${p.repo}/blob/main/ARCHITECTURE.md`}>Architecture</a> ·
+      <a href={`${p.repo}/blob/v1.0.0/docs/READINESS_MODEL.md`}>Readiness model</a> ·
+      <a href={`${p.repo}/blob/v1.0.0/docs/POLICY.md`}>Policy reference</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>
+
+<style>
+  .verdict-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6.5rem;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-muted);
+    background: var(--surface);
+  }
+
+  .verdict-chip--go {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: var(--accent-wash);
+  }
+
+  .verdict-chip--blocked {
+    color: var(--caution);
+    border-color: color-mix(in srgb, var(--caution) 40%, transparent);
+    background: var(--caution-wash);
+  }
+</style>
