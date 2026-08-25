@@ -20,7 +20,13 @@ const { number, label, title, width = "narrow", class: className } = Astro.props
     </p>
   </div>
   <div class:list={["mt-8 md:mt-10", width === "narrow" && "max-w-[46rem]"]}>
-    {title && <h2 class="reveal font-display text-display text-ink">{title}</h2>}
+    {
+      title ? (
+        <h2 class="reveal font-display text-display text-ink">{title}</h2>
+      ) : (
+        <h2 class="sr-only">{label}</h2>
+      )
+    }
     <div class:list={["case-prose", title && "mt-6"]}>
       <slot />
     </div>
