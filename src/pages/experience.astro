@@ -1,0 +1,207 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import ArrowLink from "~/components/ArrowLink.astro";
+import { links, withBase } from "~/lib/site";
+import { sandploverPrState } from "~/lib/github";
+
+const pr = await sandploverPrState();
+
+const areas = [
+  {
+    title: "Product engineering",
+    text: "Client-facing features across the stack: React and Next.js frontends, API endpoints, and PostgreSQL-backed data systems — implemented end to end, from route behavior to the data underneath it.",
+  },
+  {
+    title: "Data coverage and honest states",
+    text: "A recurring theme of my platform work: making sure routes behave correctly when data is partial, unavailable, or failing — and that empty, error, and loading states tell the truth instead of pretending.",
+  },
+  {
+    title: "Quality and release validation",
+    text: "Regression testing with Playwright, CI and release-gate validation, and pre-merge verification. The habit is the same one my personal projects show: evidence before a status claim.",
+  },
+  {
+    title: "Production investigation",
+    text: "Debugging live behavior, auditing architecture and unfamiliar areas of the codebase, and writing up findings so the next engineer doesn’t re-derive them.",
+  },
+  {
+    title: "Engineering process",
+    text: "Issue-driven work, reviewable pull requests, and technical documentation. I write things down — investigation reports, decision records, runbooks for what I touched.",
+  },
+  {
+    title: "AI-assisted engineering",
+    text: "Using AI tooling to move faster while keeping the verification human and deterministic: generated code is reviewed, tested, and validated against evidence before it counts as done.",
+  },
+];
+
+const stack: [string, string[]][] = [
+  [
+    "Languages",
+    ["TypeScript", "JavaScript", "Python", "Go", "Rust", "C#", "Swift", "SQL", "C", "C++"],
+  ],
+  [
+    "Frontend",
+    ["React", "Next.js", "Svelte", "Astro", "HTMX", "SwiftUI", "Tailwind CSS", "HTML + CSS"],
+  ],
+  ["Backend", ["Node.js", "FastAPI", "ASP.NET Core", "Go services", "REST APIs", "GraphQL"]],
+  ["Data", ["PostgreSQL", "SQLite", "Prisma", "SQLAlchemy", "Entity Framework", "Supabase"]],
+  ["Testing & delivery", ["Playwright", "Vitest", "pytest", "xUnit", "GitHub Actions", "CI/CD"]],
+  [
+    "AI & tooling",
+    ["RAG", "semantic retrieval", "AI agents", "context engineering", "Ollama", "Git + GitHub"],
+  ],
+];
+---
+
+<BaseLayout
+  title="Experience"
+  description="Mateo Osorio Delhonte's experience: platform engineering at SolutionStream on the New Reward platform — client-facing product work, React/Next.js, APIs, PostgreSQL, QA validation, and production investigation."
+>
+  <section class="container-page pt-20 pb-20 md:pt-28">
+    <p class="eyebrow">Experience</p>
+    <h1 class="mt-6 max-w-3xl font-display text-display-xl text-ink">
+      Production platforms, <em class="text-accent italic whitespace-nowrap">client-facing</em> quality.
+    </h1>
+  </section>
+
+  <!-- current role -->
+  <section class="container-page pb-24 md:pb-32">
+    <div class="hairline-t grid gap-x-12 gap-y-10 pt-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <div class="reveal lg:sticky lg:top-24">
+          <p class="font-display text-title text-ink">SolutionStream</p>
+          <p class="mt-1 text-sm text-ink-muted">Platform Engineer — New Reward platform</p>
+          <p class="mt-3 flex items-center gap-2">
+            <span class="chip chip--go"
+              ><span class="chip-dot" aria-hidden="true"></span>Current</span
+            >
+          </p>
+          <p class="mt-6 max-w-xs text-sm leading-relaxed text-ink-faint">
+            Client work stays confidential here — what follows is the shape of the engineering, not
+            its details.
+          </p>
+        </div>
+      </div>
+      <div class="lg:col-span-8">
+        <p class="reveal max-w-2xl text-lede text-ink-muted">
+          I work on a client-facing product platform: building features across frontend, APIs and
+          data, and owning the quality work that keeps a production system trustworthy — route
+          behavior, data coverage, error states, regression testing, and release validation.
+        </p>
+        <div class="mt-12 grid gap-x-10 gap-y-0 md:grid-cols-2">
+          {
+            areas.map((area, i) => (
+              <div class="reveal hairline-t py-6" style={`--reveal-i:${i % 2}`}>
+                <h2 class="text-[0.95rem] font-medium text-ink">{area.title}</h2>
+                <p class="mt-2.5 text-sm leading-relaxed text-ink-muted">{area.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- open source -->
+  <section id="open-source" class="hairline-t bg-surface">
+    <div class="container-page py-20 md:py-28">
+      <p class="reveal eyebrow"><span class="text-accent">+</span> Open source</p>
+      <div class="mt-10 grid items-start gap-x-12 gap-y-8 lg:grid-cols-12">
+        <div class="lg:col-span-7">
+          <h2 class="reveal font-display text-display text-ink">
+            Contributing to codebases I don’t own.
+          </h2>
+          <p class="reveal mt-6 max-w-xl text-ink-muted" style="--reveal-i:1">
+            My own repositories show how I build from scratch; contribution shows the other skill —
+            reading an unfamiliar codebase, following its conventions, and making a change its
+            maintainers can trust. My projects are MIT-licensed with contribution guides, and
+            RepoSignal ships <a
+              href={`${links.repos.reposignal}/labels/good%20first%20issue`}
+              class="evidence-link">good-first-issues</a
+            > scoped for new contributors.
+          </p>
+        </div>
+        <div class="reveal lg:col-span-5" style="--reveal-i:2">
+          <a
+            href={links.sandploverPr}
+            class="group block rounded-xl border border-line bg-paper p-7 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <p class="font-mono text-[0.72rem] tracking-[0.08em] text-ink-faint uppercase">
+                sandpiper-toolchain/sandplover · PR #261
+              </p>
+              {
+                pr.state === "merged" ? (
+                  <span class="chip chip--go">
+                    <span class="chip-dot" aria-hidden="true" />
+                    Merged
+                  </span>
+                ) : pr.state === "open" ? (
+                  <span class="chip chip--open">
+                    <span class="chip-dot" aria-hidden="true" />
+                    Open · awaiting review
+                  </span>
+                ) : (
+                  <span class="chip">Closed</span>
+                )
+              }
+            </div>
+            <p
+              class="mt-4 font-display text-title text-ink transition-colors group-hover:text-accent"
+            >
+              {pr.title}
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-ink-muted">
+              A correctness fix to a scientific Python toolchain: NaN validation applied after
+              clipping in the compensation path, with a regression test.
+            </p>
+            <p class="mt-5 font-mono text-[0.65rem] tracking-[0.1em] text-ink-faint uppercase">
+              State verified {pr.live ? "at build time" : `on ${pr.verifiedAt}`}
+            </p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- stack -->
+  <section class="container-page py-24 md:py-32">
+    <p class="reveal eyebrow"><span class="text-accent">+</span> The stack</p>
+    <h2 class="reveal mt-8 max-w-2xl font-display text-display text-ink">
+      Multiple stacks, one standard.
+    </h2>
+    <p class="reveal mt-5 max-w-xl text-ink-muted" style="--reveal-i:1">
+      Every language here appears in a shipped, public project or in production work — no
+      proficiency bars, just where things get used. The engineering standard travels across all of
+      them.
+    </p>
+    <div class="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        stack.map(([group, items], i) => (
+          <div class="reveal" style={`--reveal-i:${i % 3}`}>
+            <p class="eyebrow mb-5">{group}</p>
+            <ul class="space-y-2">
+              {items.map((item) => (
+                <li class="hairline-b flex items-baseline justify-between pb-2 text-sm text-ink">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- close -->
+  <section class="hairline-t">
+    <div class="container-page flex flex-wrap items-center justify-between gap-6 py-16">
+      <p class="max-w-md font-display text-title text-ink">
+        The full picture, projects included, lives on one page.
+      </p>
+      <div class="flex flex-wrap gap-5">
+        <ArrowLink href={withBase("/work/")}>Selected work</ArrowLink>
+        <ArrowLink href={withBase("/resume/")}>Resume</ArrowLink>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
