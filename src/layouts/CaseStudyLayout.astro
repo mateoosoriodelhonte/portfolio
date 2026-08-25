@@ -10,7 +10,7 @@ interface Props {
   ogImage?: string | undefined;
 }
 
-const { slug, description, ogImage } = Astro.props;
+const { slug, description, ogImage = `/og/work-${slug}.png` } = Astro.props;
 const p: Project = project(slug);
 
 const index = projects.findIndex((x) => x.slug === slug);
