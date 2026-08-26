@@ -3,17 +3,17 @@ import { test, expect } from "@playwright/test";
 test("filters the index by domain and restores", async ({ page }) => {
   await page.goto("work/");
   const rows = page.locator(".work-row:visible");
-  await expect(rows).toHaveCount(6);
+  await expect(rows).toHaveCount(7);
 
   await page.getByRole("button", { name: "Mobile" }).click();
   await expect(rows).toHaveCount(1);
   await expect(rows.first()).toContainText("ShoppinLyst");
 
   await page.getByRole("button", { name: "Developer Tools" }).click();
-  await expect(rows).toHaveCount(3);
+  await expect(rows).toHaveCount(4);
 
   await page.getByRole("button", { name: "All", exact: true }).click();
-  await expect(rows).toHaveCount(6);
+  await expect(rows).toHaveCount(7);
 });
 
 test("filter state is reflected in aria-pressed", async ({ page }) => {

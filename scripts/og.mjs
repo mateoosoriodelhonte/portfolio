@@ -44,6 +44,12 @@ const cards = [
     foot: "Rust · Go · read-only by design",
   },
   {
+    file: "work-contextbench",
+    kicker: "Case study — ContextBench",
+    title: "Retrieval, <em>measured</em> — not guessed.",
+    foot: "Python · SolidJS · Qdrant · BM25 · RRF · IR metrics",
+  },
+  {
     file: "work-shoppinlyst",
     kicker: "On the App Store — ShoppinLyst",
     title: "Grocery planning, from list to store to <em>recipe</em>.",
@@ -156,10 +162,13 @@ const page = (card) => `<!doctype html>
   <div class="foot"><span>${card.foot}</span><span class="dot"></span></div>
 </body></html>`;
 
+const only = process.argv.find((a) => a.startsWith("--only="))?.split("=")[1];
+const selected = only ? cards.filter((c) => c.file === only) : cards;
+
 const browser = await chromium.launch();
 const tab = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 
-for (const card of cards) {
+for (const card of selected) {
   await tab.setContent(page(card), { waitUntil: "networkidle" });
   await tab.evaluate(() => document.fonts.ready);
   await tab.waitForTimeout(150);
