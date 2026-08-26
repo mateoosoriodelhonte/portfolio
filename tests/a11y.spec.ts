@@ -5,6 +5,7 @@ const pages = [
   ".",
   "work/",
   "work/reposignal/",
+  "work/contextbench/",
   "work/shoppinlyst/",
   "ai/",
   "experience/",

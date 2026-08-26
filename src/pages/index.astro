@@ -14,7 +14,12 @@ const latestPosts = (await publishedPosts()).filter((p) => !p.data.draft).slice(
 const reposignal = project("reposignal");
 const studyforge = project("studyforge");
 const processpilot = project("processpilot");
-const quiet = [project("shoppinlyst"), project("tracemark"), project("gatehouse")];
+const quiet = [
+  project("contextbench"),
+  project("shoppinlyst"),
+  project("tracemark"),
+  project("gatehouse"),
+];
 ---
 
 <BaseLayout>

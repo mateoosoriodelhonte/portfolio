@@ -1,0 +1,217 @@
+---
+import { Image } from "astro:assets";
+import CaseStudyLayout from "~/layouts/CaseStudyLayout.astro";
+import CaseSection from "~/components/CaseSection.astro";
+import { project } from "~/lib/projects";
+import { withBase } from "~/lib/site";
+
+const p = project("contextbench");
+
+const workbench = [
+  [
+    "Ingest with provenance",
+    "TXT, Markdown, PDF and source files — normalized, never executed. Every chunk keeps its document, heading, page, and character range.",
+  ],
+  [
+    "Compare chunking",
+    "Fixed-token, paragraph-aware, and heading-aware strategies side by side — where retrieval quality is usually decided.",
+  ],
+  [
+    "Frozen indexes",
+    "Several index configurations coexist per project, stored in persisted local Qdrant collections with document, type, and tag filters.",
+  ],
+  [
+    "Inspect every ranker",
+    "Native vector scores, native BM25 scores, deterministic RRF fusion, and an optional local cross-encoder over the full candidate set.",
+  ],
+  [
+    "Judge, then measure",
+    "Mark relevant chunks in the Query Debugger to build versioned evaluation queries — the only ground truth the metrics ever use.",
+  ],
+  [
+    "Keep the receipts",
+    "Experiments persist configuration, rankings, metrics, and measured latency, exportable as versioned JSON for CI and agent workflows.",
+  ],
+];
+---
+
+<CaseStudyLayout
+  slug="contextbench"
+  description="Case study: ContextBench, a local-first RAG retrieval evaluation workbench — Qdrant, BM25, reciprocal rank fusion, optional reranking, and real IR metrics computed from human relevance judgments. No LLM judges."
+>
+  <div class="container-page">
+    <figure class="reveal">
+      <div class="media-frame shadow-lift">
+        <Image
+          src={p.images.queryDebugger!}
+          alt="The ContextBench Query Debugger: a question about Raft compaction, a measured five-stage pipeline (vector, BM25, fuse, rerank, assemble), total latency, and vector versus BM25 result columns with per-chunk scores and relevance checkboxes"
+          widths={[640, 1080, 1600, 2000]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+          loading="eager"
+        />
+      </div>
+      <figcaption class="case-caption">
+        The Query Debugger — every stage measured, every score on its native scale
+      </figcaption>
+    </figure>
+  </div>
+
+  <CaseSection
+    number="01"
+    label="The problem"
+    title="RAG failures are retrieval failures you can’t see."
+  >
+    <p>
+      When a grounded system answers badly, the model takes the blame — but most of the time the
+      evidence it needed was never retrieved, or was retrieved and buried. Teams tune prompts and
+      swap models while the actual failure stays invisible: nobody can see what the retriever
+      returned, or measure whether a change made it better.
+    </p>
+    <p>
+      ContextBench is the workbench for exactly that gap: <strong
+        >debug and measure your RAG pipeline instead of guessing whether retrieval works.</strong
+      > I’d already made the argument in writing — <a
+        href={withBase("/blog/retrieval-before-models/")}>retrieval quality before model quality</a
+      > — and this is the argument as software.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    number="02"
+    label="The measurement stance"
+    title="Judged by humans, scored by arithmetic."
+  >
+    <p>
+      Every metric in ContextBench — Recall@K, Precision@K, MRR, Hit Rate@K, nDCG@K — is computed
+      from <strong>stored, versioned relevance judgments</strong> that a person made by marking chunks
+      in the Query Debugger. It does not ask an LLM to grade retrieval, and it refuses to invent a combined
+      “RAG quality” score.
+    </p>
+    <p>
+      Score scales stay honest too: BM25 and vector similarity remain on their native scales instead
+      of being normalized into a fake common one, and hybrid ranking uses deterministic reciprocal
+      rank fusion:
+    </p>
+    <pre
+      class="overflow-x-auto rounded-lg border border-line bg-sunken px-5 py-4 font-mono text-[0.85rem] text-ink-muted"><code>RRF(d) = sum(1 / (60 + rank_i(d)))</code></pre>
+    <p>
+      Same rules as the rest of my work: <a href={withBase("/work/reposignal/")}
+        >deterministic scoring</a
+      >, honest unknowns — the built-in benchmark marks cross-encoder timing
+      <code>NOT_RUN</code> unless that model was actually tested.
+    </p>
+  </CaseSection>
+
+  <CaseSection number="03" label="What the workbench does" width="wide">
+    <div
+      class="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        workbench.map(([name, detail]) => (
+          <div class="bg-paper p-6">
+            <h3 class="text-sm font-medium text-ink">{name}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{detail}</p>
+          </div>
+        ))
+      }
+    </div>
+    <figure class="reveal mt-10">
+      <div class="media-frame shadow-soft">
+        <Image
+          src={p.images.experimentMetrics!}
+          alt="A ContextBench experiment over the demo corpus: grids of recall, precision, nDCG and hit-rate at K equals 1, 3, 5 and 10, each labeled 'computed from stored rankings'"
+          widths={[640, 1080, 1600]}
+          sizes="(min-width: 1280px) 1152px, 94vw"
+        />
+      </div>
+      <figcaption class="case-caption">
+        An experiment on the demo corpus — standard IR metrics, computed from stored rankings
+      </figcaption>
+    </figure>
+  </CaseSection>
+
+  <CaseSection number="04" label="Engineering decisions" width="wide">
+    <dl class="grid gap-x-12 lg:grid-cols-2">
+      <div class="decision reveal">
+        <dt>A zero-download provider is the default</dt>
+        <dd>
+          The built-in hash embedding provider is deterministic and needs no model, so the demo, the
+          tests, and CI pipelines run with nothing downloaded. Semantic quality needs a real
+          embedding model — and the docs say so instead of pretending hashes understand meaning.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Model downloads are consent-gated and pinned</dt>
+        <dd>
+          Before any request may fetch the recommended <code>bge-small</code> embedder or the MiniLM cross-encoder,
+          the UI shows the model name, approximate size, and cache location. Successful index builds record
+          the resolved model revision, so later query embeddings provably use the same weights.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>One Python core, two front doors</dt>
+        <dd>
+          The CLI and the SolidJS web app call the same retrieval and evaluation code, and
+          <code>eval --json</code>, exports, and the benchmark emit named, versioned schemas — so
+          the workbench slots into CI gates and agent workflows without screen-scraping.
+        </dd>
+      </div>
+      <div class="decision reveal">
+        <dt>Local-first, defensively</dt>
+        <dd>
+          Documents, vectors, and experiments live in local SQLite and Qdrant files; both servers
+          bind to loopback and the API rejects non-loopback Host headers. Uploaded files are data,
+          never code. Optional Ollama answers label retrieved text as untrusted evidence and reject
+          uncited or spoofed citations.
+        </dd>
+      </div>
+    </dl>
+  </CaseSection>
+
+  <CaseSection number="05" label="Ground truth, versioned" width="wide">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="case-prose">
+        <p>
+          Judgments are data with a lifecycle: evaluation queries are versioned, each carries its
+          marked-relevant chunks, and experiments pin the dataset version and the frozen index they
+          ran against. Change the chunking, re-run the experiment, and the comparison is
+          apples-to-apples — or the tool tells you it isn’t.
+        </p>
+        <p>
+          Verification follows the house pattern: hand-computed metric tests, determinism tests
+          across chunking and fusion, fixture-to-evaluation API tests, component tests, and a
+          Playwright flow through the whole product — plus a wheel check proving the built package
+          actually contains the browser app.
+        </p>
+      </div>
+      <figure class="reveal">
+        <div class="media-frame shadow-soft">
+          <Image
+            src={p.images.evaluationSet!}
+            alt="ContextBench's evaluation set: versioned, human-marked relevance judgments for three demo queries, with the note that metrics use these judgments only"
+            widths={[560, 900, 1400]}
+            sizes="(min-width: 1024px) 46vw, 94vw"
+          />
+        </div>
+        <figcaption class="case-caption">
+          Versioned judgments — the only ground truth the metrics ever see
+        </figcaption>
+      </figure>
+    </div>
+  </CaseSection>
+
+  <CaseSection number="06" label="Stack and links">
+    <p>
+      Python 3.12 · SolidJS + TypeScript · Qdrant (local, persisted) · SQLite · BM25 · optional
+      Sentence Transformers and cross-encoder reranking · optional Ollama answers over cited
+      evidence · uv · Playwright · GitHub Actions. Apache-2.0.
+    </p>
+    <p>
+      <a href={p.repo}>Repository</a> ·
+      <a href={`${p.repo}/blob/main/ARCHITECTURE.md`}>Architecture</a> ·
+      <a href={`${p.repo}/blob/main/docs/EVALUATION_METRICS.md`}>Evaluation metrics</a> ·
+      <a href={`${p.repo}/blob/main/docs/HYBRID_RETRIEVAL.md`}>Hybrid retrieval</a> ·
+      <a href={`${p.repo}/releases/tag/v1.0.0`}>v1.0.0 release</a>
+    </p>
+  </CaseSection>
+</CaseStudyLayout>

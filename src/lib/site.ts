@@ -23,6 +23,7 @@ export const links = {
     processpilot: "https://github.com/mateoosoriodelhonte/processpilot",
     tracemark: "https://github.com/mateoosoriodelhonte/tracemark",
     gatehouse: "https://github.com/mateoosoriodelhonte/gatehouse",
+    contextbench: "https://github.com/mateoosoriodelhonte/contextbench",
   },
   reposignalDemo: "https://reposignal-lovat.vercel.app",
   sandploverPr: "https://github.com/sandpiper-toolchain/sandplover/pull/261",

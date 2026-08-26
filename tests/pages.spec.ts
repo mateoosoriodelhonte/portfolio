@@ -6,6 +6,7 @@ const routes: [path: string, h1: string | RegExp][] = [
   ["work/reposignal/", "RepoSignal"],
   ["work/studyforge/", "StudyForge"],
   ["work/processpilot/", "ProcessPilot"],
+  ["work/contextbench/", "ContextBench"],
   ["work/shoppinlyst/", "ShoppinLyst"],
   ["work/tracemark/", "TraceMark"],
   ["work/gatehouse/", "Gatehouse"],

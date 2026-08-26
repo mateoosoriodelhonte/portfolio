@@ -17,6 +17,9 @@ import tracemarkLocalAi from "~/assets/projects/tracemark/tracemark-local-ai.png
 import gatehouseDashboard from "~/assets/projects/gatehouse/dashboard.png";
 import processpilotOverview from "~/assets/projects/processpilot/overview.png";
 import processpilotApplications from "~/assets/projects/processpilot/applications.png";
+import contextbenchQueryDebugger from "~/assets/projects/contextbench/query-debugger.png";
+import contextbenchEvaluationSet from "~/assets/projects/contextbench/evaluation-set.png";
+import contextbenchExperimentMetrics from "~/assets/projects/contextbench/experiment-metrics.png";
 import shoppinlystLists from "~/assets/projects/shoppinlyst/lists.png";
 import shoppinlystAddItem from "~/assets/projects/shoppinlyst/add-item.png";
 import shoppinlystNearby from "~/assets/projects/shoppinlyst/nearby.png";
@@ -97,6 +100,22 @@ export const projects: Project[] = [
     images: {
       overview: processpilotOverview,
       applications: processpilotApplications,
+    },
+  },
+  {
+    slug: "contextbench",
+    name: "ContextBench",
+    tagline: "Stop guessing whether retrieval works — measure it.",
+    summary:
+      "A local-first workbench for debugging and evaluating RAG retrieval: see exactly what vector search, BM25, and rank fusion returned, then score those rankings with real IR metrics against human relevance judgments. No LLM judges, no invented quality score.",
+    domains: ["AI", "Developer Tools"],
+    stack: ["Python", "SolidJS", "TypeScript", "Qdrant", "SQLite", "Sentence Transformers"],
+    repo: links.repos.contextbench,
+    facts: ["Recall · MRR · nDCG", "no LLM judges", "Apache-2.0"],
+    images: {
+      queryDebugger: contextbenchQueryDebugger,
+      evaluationSet: contextbenchEvaluationSet,
+      experimentMetrics: contextbenchExperimentMetrics,
     },
   },
   {
