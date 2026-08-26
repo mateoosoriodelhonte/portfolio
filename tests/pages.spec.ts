@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 const routes: [path: string, h1: string | RegExp][] = [
   [".", /Mateo Osorio Delhonte/],
-  ["work/", /Six projects/],
+  ["work/", /Seven projects/],
   ["work/reposignal/", "RepoSignal"],
   ["work/studyforge/", "StudyForge"],
   ["work/processpilot/", "ProcessPilot"],
@@ -15,7 +15,6 @@ const routes: [path: string, h1: string | RegExp][] = [
   ["blog/", /evidence side of software/],
   ["blog/missing-data-is-not-failure/", "Missing data is not failure"],
   ["about/", /Lima/],
-  ["resume/", "Mateo Osorio Delhonte"],
 ];
 
 for (const [path, heading] of routes) {
@@ -25,6 +24,20 @@ for (const [path, heading] of routes) {
     await expect(page.locator("h1").first()).toContainText(heading);
   });
 }
+
+test("the resume PDF is served", async ({ request }) => {
+  const res = await request.get("http://localhost:4322/portfolio/Mateo-Osorio-Delhonte-Resume.pdf");
+  expect(res.status()).toBe(200);
+  expect(res.headers()["content-type"]).toContain("pdf");
+});
+
+test("/resume/ forwards to the PDF", async ({ request }) => {
+  const res = await request.get("http://localhost:4322/portfolio/resume/");
+  expect(res.status()).toBe(200);
+  const body = await res.text();
+  expect(body).toContain('http-equiv="refresh"');
+  expect(body).toContain("Mateo-Osorio-Delhonte-Resume.pdf");
+});
 
 test("unknown routes get the custom 404", async ({ page }) => {
   const response = await page.goto("this-route-does-not-exist/");

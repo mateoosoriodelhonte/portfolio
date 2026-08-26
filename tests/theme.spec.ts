@@ -39,3 +39,32 @@ test("both themes paint their own background", async ({ page }) => {
   const dark = await bg();
   expect(light).not.toBe(dark);
 });
+
+test("system dark theme survives view-transition navigation", async ({ page, isMobile }) => {
+  test.skip(!!isMobile, "uses the desktop primary nav");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto(".");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  for (const label of ["Work", "AI", "About"]) {
+    await nav.getByRole("link", { name: label }).click();
+    await page.waitForTimeout(400);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  }
+});
+
+test("an explicit light choice also survives navigation", async ({ page, isMobile }) => {
+  test.skip(!!isMobile, "uses the desktop primary nav");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto(".");
+  await page.locator("#theme-toggle").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  await page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" })
+    .click();
+  await page.waitForTimeout(400);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+});

@@ -21,7 +21,7 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: "hover",
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), sitemap({ filter: (page) => !page.includes("/resume/") })],
   vite: {
     plugins: [tailwindcss()],
   },

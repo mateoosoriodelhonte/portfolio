@@ -12,7 +12,6 @@ const pages = [
   "blog/",
   "blog/missing-data-is-not-failure/",
   "about/",
-  "resume/",
 ];
 
 for (const path of pages) {

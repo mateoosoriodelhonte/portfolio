@@ -22,7 +22,7 @@ const cards = [
   {
     file: "work",
     kicker: "Mateo Osorio Delhonte — Selected work",
-    title: "Six projects, six <em>verifiable</em> claims.",
+    title: "Seven projects, seven <em>verifiable</em> claims.",
     foot: "mateoosoriodelhonte.github.io/portfolio",
   },
   {
