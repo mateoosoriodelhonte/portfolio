@@ -6,7 +6,7 @@ test.describe("desktop navigation", () => {
   test("primary nav reaches every section", async ({ page }) => {
     await page.goto(".");
     for (const [label, h1] of [
-      ["Work", /Six projects/],
+      ["Work", /Seven projects/],
       ["Experience", /Production platforms/],
       ["AI", /Make the model/],
       ["Blog", /evidence side/],
@@ -53,7 +53,7 @@ test.describe("mobile menu", () => {
       .getByRole("navigation", { name: "Primary mobile" })
       .getByRole("link", { name: "Work" })
       .click();
-    await expect(page.locator("h1").first()).toContainText(/Six projects/);
+    await expect(page.locator("h1").first()).toContainText(/Seven projects/);
     await expect(page.locator("html")).not.toHaveClass(/menu-open/);
   });
 

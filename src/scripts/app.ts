@@ -13,6 +13,16 @@ function currentTheme(): "light" | "dark" {
   return root.dataset.theme === "dark" ? "dark" : "light";
 }
 
+/** The visitor's stored choice, else the OS preference. */
+function resolvedTheme(): "light" | "dark" {
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem("theme");
+  } catch {}
+  if (stored === "light" || stored === "dark") return stored;
+  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 function applyTheme(theme: "light" | "dark", persist: boolean) {
   root.dataset.theme = theme;
   if (persist) {
@@ -78,6 +88,9 @@ if (!window.__appInit) {
 
   document.addEventListener("scroll", onScroll, { passive: true });
   document.addEventListener("astro:after-swap", () => {
+    // The router swaps in the new page's <html> attributes, which were
+    // rendered without a theme — re-stamp before the new page paints.
+    applyTheme(resolvedTheme(), false);
     closeMenu();
     onScroll();
   });
